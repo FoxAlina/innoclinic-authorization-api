@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/Core/">
+    <Project Path="InnoclinicAutho.Application/InnoclinicAutho.Application.csproj" Id="017eefd7-6efa-4a85-a2df-54b0a3bded3f" />
+    <Project Path="InnoclinicAutho.Domain/InnoclinicAutho.Domain.csproj" Id="ebae5c7d-46ed-4f86-85df-e724923a5ac5" />
+  </Folder>
+  <Folder Name="/Infrastructure/">
+    <Project Path="InnoclinicAutho.Persistence/InnoclinicAutho.Persistence.csproj" Id="73cdad8d-82b1-4012-84b0-bdcea60a7914" />
+  </Folder>
+  <Folder Name="/Presentation/">
+    <Project Path="InnoclinicAutho.WebApi/InnoclinicAutho.WebApi.csproj" Id="e56bd560-bc70-4782-8138-ea58f0d9a257" />
+  </Folder>
+</Solution>

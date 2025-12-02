@@ -1,0 +1,11 @@
+@InnoclinicAutho.WebApi_HostAddress = http://localhost:5010
+
+GET {{InnoclinicAutho.WebApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
+
+GET {{InnoclinicAutho.WebApi_HostAddress}}/users/
+Accept: appliction/json
+
+###
