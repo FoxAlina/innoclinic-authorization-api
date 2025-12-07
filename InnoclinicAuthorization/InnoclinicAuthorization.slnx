@@ -4,6 +4,7 @@
     <Project Path="InnoclinicAutho.Domain/InnoclinicAutho.Domain.csproj" Id="ebae5c7d-46ed-4f86-85df-e724923a5ac5" />
   </Folder>
   <Folder Name="/Infrastructure/">
+    <Project Path="InnoclinicAutho.Infrastructure/InnoclinicAutho.Infrastructure.csproj" Id="030f7e69-8422-4953-ad73-07ace6f73d25" />
     <Project Path="InnoclinicAutho.Persistence/InnoclinicAutho.Persistence.csproj" Id="73cdad8d-82b1-4012-84b0-bdcea60a7914" />
   </Folder>
   <Folder Name="/Presentation/">
