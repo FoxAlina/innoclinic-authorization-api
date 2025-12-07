@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\InnoclinicAutho.Application\InnoclinicAutho.Application.csproj" />
+    <ProjectReference Include="..\InnoclinicAutho.Infrastructure\InnoclinicAutho.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
