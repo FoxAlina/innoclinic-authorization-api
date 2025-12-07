@@ -8,7 +8,7 @@ namespace InnoclinicAutho.Domain.Common
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid ID { get; set; }
-        public DateTimeOffset DateCreated { get; set; } = DateTimeOffset.Now;
+        public DateTimeOffset DateCreated { get; set; } = DateTimeOffset.UtcNow;
         public DateTimeOffset? DateUpdated { get; set; }
         public DateTimeOffset? DateDeleted { get; set; }
         public Guid UserID { get; set; }
