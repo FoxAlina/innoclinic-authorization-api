@@ -5,7 +5,7 @@ using InnoclinicAutho.Domain.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace InnoclinicAutho.Application.UseCases.Users.Commands
+namespace InnoclinicAutho.Application.UseCases.Users.Commands.RegisterUser
 {
     public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, RegisterUserResponse>
     {

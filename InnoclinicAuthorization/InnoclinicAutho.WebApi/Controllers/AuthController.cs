@@ -1,4 +1,4 @@
-﻿using InnoclinicAutho.Application.UseCases.Users.Commands;
+﻿using InnoclinicAutho.Application.UseCases.Users.Commands.RegisterUser;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

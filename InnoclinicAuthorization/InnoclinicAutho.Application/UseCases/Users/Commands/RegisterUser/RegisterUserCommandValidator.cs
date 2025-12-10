@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace InnoclinicAutho.Application.UseCases.Users.Commands
+namespace InnoclinicAutho.Application.UseCases.Users.Commands.RegisterUser
 {
     public class RegisterUserCommandValidator : AbstractValidator<RegisterUserCommand>
     {

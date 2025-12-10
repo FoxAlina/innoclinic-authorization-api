@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace InnoclinicAutho.Application.UseCases.Users.Commands
+namespace InnoclinicAutho.Application.UseCases.Users.Commands.RegisterUser
 {
     public record RegisterUserCommand
     (
@@ -11,12 +11,4 @@ namespace InnoclinicAutho.Application.UseCases.Users.Commands
         string ConfirmedPassword
     ) : IRequest<RegisterUserResponse>;
 
-    public record RegisterUserResponse
-    (
-        Guid UserId,
-        string email,
-        string FirstName,
-        string LastName,
-        string Token
-    );
 }

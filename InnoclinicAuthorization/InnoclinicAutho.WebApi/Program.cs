@@ -1,6 +1,6 @@
 using FluentValidation;
 using InnoclinicAutho.Application.UseCases.Behavior;
-using InnoclinicAutho.Application.UseCases.Users.Commands;
+using InnoclinicAutho.Application.UseCases.Users.Commands.RegisterUser;
 using InnoclinicAutho.Persistence.Extensions;
 using InnoclinicAutho.WebApi.Middleware;
 using MediatR;
