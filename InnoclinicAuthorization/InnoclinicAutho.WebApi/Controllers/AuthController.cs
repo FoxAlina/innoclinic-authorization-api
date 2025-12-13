@@ -1,4 +1,5 @@
-﻿using InnoclinicAutho.Application.UseCases.Users.Commands.RegisterUser;
+﻿using InnoclinicAutho.Application.UseCases.Users.Commands.LoginUser;
+using InnoclinicAutho.Application.UseCases.Users.Commands.RegisterUser;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -31,5 +32,20 @@ namespace InnoclinicAutho.WebApi.Controllers
             });
         }
 
+        [HttpPost("signin")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> Signin([FromBody] LoginUserCommand command)
+        {
+            var result = await _mediator.Send(command);
+
+            return Ok(new
+            {
+                success = true,
+                message = "Signed in successfuly.",
+                data = result
+            });
+        }
     }
 }
