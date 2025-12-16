@@ -3,15 +3,15 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace InnoclinicAutho.Domain.Common
 {
-    public class BaseEntity
+    public interface IBaseEntity
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid ID { get; set; }
-        public DateTimeOffset DateCreated { get; set; } = DateTimeOffset.UtcNow;
+        public Guid Id { get; set; }
+        public DateTimeOffset DateCreated { get; set; }
         public DateTimeOffset? DateUpdated { get; set; }
         public DateTimeOffset? DateDeleted { get; set; }
         public Guid UserID { get; set; }
-        public bool IsDeleted { get; set; } = false;
+        public bool IsDeleted { get; set; }
     }
 }

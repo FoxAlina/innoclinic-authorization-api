@@ -1,12 +1,14 @@
 ﻿using InnoclinicAutho.Application.Interfaces;
 using InnoclinicAutho.Domain.Common;
 using InnoclinicAutho.Domain.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
 namespace InnoclinicAutho.Persistence.Context
 {
-    public class ApiDbContext : DbContext, IApiDbContext
+    public class ApiDbContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>, IApiDbContext
     {
         public ApiDbContext() : base() { }
         public ApiDbContext(DbContextOptions<ApiDbContext> options) : base(options) { }
@@ -21,7 +23,7 @@ namespace InnoclinicAutho.Persistence.Context
         {
             modelBuilder.Entity<User>(entity =>
             {
-                entity.HasKey(e => e.ID);
+                entity.HasKey(e => e.Id);
 
                 entity.Property(e => e.Email)
                     .IsRequired()
@@ -37,10 +39,6 @@ namespace InnoclinicAutho.Persistence.Context
 
                 entity.Property(e => e.PasswordHash)
                     .IsRequired();
-
-                entity.Property(e => e.Role)
-                    .IsRequired()
-                    .HasDefaultValue(UserRoles.Patient);
 
                 entity.Property(e => e.IsDeleted)
                     .HasDefaultValue(false);

@@ -19,8 +19,10 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services
-    .AddDbContext(builder.Configuration.GetConnectionString("DefaultConnection"))
+    .AddDbContext(connectionString)
+    .AddIdentity()
     .AddJwtAuth(builder.Configuration);
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining(typeof(RegisterUserCommandHandler)));

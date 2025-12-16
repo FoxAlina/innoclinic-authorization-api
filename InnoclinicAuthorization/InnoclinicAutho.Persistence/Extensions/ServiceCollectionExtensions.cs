@@ -1,8 +1,10 @@
 ﻿using InnoclinicAutho.Application.Interfaces;
+using InnoclinicAutho.Domain.Entities;
 using InnoclinicAutho.Infrastructure.Authentification;
 using InnoclinicAutho.Infrastructure.Implementations;
 using InnoclinicAutho.Persistence.Context;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,6 +25,21 @@ namespace InnoclinicAutho.Persistence.Extensions
 
             serviceCollection.AddDbContext<ApiDbContext>(options => options.UseNpgsql(connectionString));
             serviceCollection.AddScoped<IApiDbContext>(provider => provider.GetRequiredService<ApiDbContext>());
+
+            return serviceCollection;
+        }
+
+        public static IServiceCollection AddIdentity(this IServiceCollection serviceCollection)
+        {
+            serviceCollection.AddIdentityCore<User>(options =>
+            {
+                options.Password.RequireDigit = true;
+                options.Password.RequiredLength = 6;
+                options.User.RequireUniqueEmail = true;
+            })
+            .AddRoles<IdentityRole<Guid>>()
+            .AddEntityFrameworkStores<ApiDbContext>()
+            .AddDefaultTokenProviders();
 
             return serviceCollection;
         }

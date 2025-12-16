@@ -10,7 +10,7 @@ namespace InnoclinicAutho.Infrastructure.Implementations
 {
     public class JwtService(IConfiguration configuration) : IJwtService
     {
-        public string GenerateToken(Guid userId, string email, UserRoles _userRole)
+        public string GenerateToken(Guid userId, string email, IList<string> userRoles)
         {
             var claims = new List<Claim>
             {
@@ -18,8 +18,12 @@ namespace InnoclinicAutho.Infrastructure.Implementations
                 new (JwtRegisteredClaimNames.Sub, userId.ToString()),
                 new (JwtRegisteredClaimNames.Email, email),
                 new (JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64),
-                new (ClaimTypes.Role, _userRole.ToString())
             };
+
+            foreach (var userRole in userRoles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, userRole));
+            }
 
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSettings:Secret"]!));
 

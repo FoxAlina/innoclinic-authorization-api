@@ -3,7 +3,9 @@ using InnoclinicAutho.Domain.Common;
 using InnoclinicAutho.Domain.Entities;
 using InnoclinicAutho.Domain.Exceptions;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace InnoclinicAutho.Application.UseCases.Users.Commands.RegisterUser
 {
@@ -12,15 +14,20 @@ namespace InnoclinicAutho.Application.UseCases.Users.Commands.RegisterUser
         private readonly IApiDbContext _context;
         private readonly IPasswordHasherNode _passwordHasher;
         private readonly IJwtService _jwtService;
-
+        private readonly UserManager<User> _userManager;
+        private readonly RoleManager<IdentityRole<Guid>> _roleManager;
         public RegisterUserCommandHandler(
             IApiDbContext context,
             IPasswordHasherNode passwordHasher,
-            IJwtService jwtService)
+            IJwtService jwtService,
+            UserManager<User> userManager,
+            RoleManager<IdentityRole<Guid>> roleManager)
         {
             _context = context;
             _passwordHasher = passwordHasher;
             _jwtService = jwtService;
+            _userManager = userManager;
+            _roleManager = roleManager;
         }
 
         public async Task<RegisterUserResponse> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
@@ -35,25 +42,32 @@ namespace InnoclinicAutho.Application.UseCases.Users.Commands.RegisterUser
 
             var user = new User
             {
+                UserName = request.Email,
                 Email = request.Email,
                 FirstName = request.FirstName,
-                LastName = request.LastName,
-                PasswordHash = _passwordHasher.HashPassword(request.Password),
-                Role = UserRoles.Patient
+                LastName = request.LastName
             };
 
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync(cancellationToken);
+            var createUserResult = await _userManager.CreateAsync(user, request.Password);
 
-            var token = _jwtService.GenerateToken(user.ID, user.Email, user.Role);
+            if (!createUserResult.Succeeded)
+                throw new DomainException("User creation failed! Please check user details and try again./nPassword should be non alpanumeric, should have atleast 6 symbols and 1 digit.");
+
+            if (!await _roleManager.RoleExistsAsync(UserRoles.Patient.ToString()))
+                await _roleManager.CreateAsync(new IdentityRole<Guid>(UserRoles.Patient.ToString()));
+
+            if (await _roleManager.RoleExistsAsync(UserRoles.Patient.ToString()))
+                await _userManager.AddToRoleAsync(user, UserRoles.Patient.ToString());
+
+            var token = _jwtService.GenerateToken(user.Id, user.Email, [UserRoles.Patient.ToString()]);
 
             return new RegisterUserResponse
                 (
-                user.ID,
-                user.Email,
-                user.FirstName,
-                user.LastName,
-                token
+                    user.Id,
+                    user.Email,
+                    user.FirstName,
+                    user.LastName,
+                    token
                 );
         }
     }
