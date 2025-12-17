@@ -15,7 +15,6 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddDbContext(this IServiceCollection serviceCollection, string? connectionString)
     {
-
         if (string.IsNullOrEmpty(connectionString))
         {
             throw new InvalidOperationException("Connection string is not found.");
