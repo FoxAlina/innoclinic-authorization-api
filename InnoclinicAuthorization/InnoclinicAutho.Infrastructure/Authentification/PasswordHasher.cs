@@ -1,31 +1,27 @@
-﻿using InnoclinicAutho.Application.Interfaces;
+﻿namespace InnoclinicAutho.Infrastructure.Authentification;
+
+using InnoclinicAutho.Application.Interfaces;
 using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace InnoclinicAutho.Infrastructure.Authentification
+public class PasswordHasher : IPasswordHasherNode
 {
-    public class PasswordHasher : IPasswordHasherNode
+    private readonly IPasswordHasher<object> _passwordHasher;
+
+    public PasswordHasher()
     {
-        private readonly IPasswordHasher<object> _passwordHasher;
+        _passwordHasher = new PasswordHasher<object>();
+    }
 
-        public PasswordHasher()
-        {
-            _passwordHasher = new PasswordHasher<object>();
-        }
+    public string HashPassword(string password)
+    {
+        return _passwordHasher.HashPassword(new object(), password);
+    }
 
-        public string HashPassword(string password)
-        {
-            return _passwordHasher.HashPassword(new object(), password);
-        }
+    public bool VerifyPassword(string password, string hashedPassword)
+    {
+        var result = _passwordHasher.VerifyHashedPassword(new object(), hashedPassword, password);
 
-        public bool VerifyPassword(string password, string hashedPassword)
-        {
-            var result = _passwordHasher.VerifyHashedPassword(new object(), hashedPassword, password);
-
-            return result == PasswordVerificationResult.Success ||
-                   result == PasswordVerificationResult.SuccessRehashNeeded;
-        }
+        return result == PasswordVerificationResult.Success ||
+               result == PasswordVerificationResult.SuccessRehashNeeded;
     }
 }
