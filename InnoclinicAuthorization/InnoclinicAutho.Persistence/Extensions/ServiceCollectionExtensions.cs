@@ -29,7 +29,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddJwtAuth(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
         serviceCollection.AddSingleton<IJwtService, JwtService>();
-        serviceCollection.AddScoped<IPasswordHasherNode, PasswordHasher>();
+        serviceCollection.AddScoped<IHashService, HashService>();
 
         serviceCollection.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>

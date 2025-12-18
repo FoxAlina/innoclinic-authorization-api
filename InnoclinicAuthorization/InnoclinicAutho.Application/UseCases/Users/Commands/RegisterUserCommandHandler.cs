@@ -10,12 +10,12 @@ using Microsoft.EntityFrameworkCore;
 public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, RegisterUserResponse>
 {
     private readonly IApiDbContext _context;
-    private readonly IPasswordHasherNode _passwordHasher;
+    private readonly IHashService _passwordHasher;
     private readonly IJwtService _jwtService;
 
     public RegisterUserCommandHandler(
         IApiDbContext context,
-        IPasswordHasherNode passwordHasher,
+        IHashService passwordHasher,
         IJwtService jwtService)
     {
         _context = context;
@@ -38,7 +38,7 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, R
             Email = request.Email,
             FirstName = request.FirstName,
             LastName = request.LastName,
-            PasswordHash = _passwordHasher.HashPassword(request.Password),
+            PasswordHash = _passwordHasher.GetHash(request.Password),
             Role = UserRoles.Patient
         };
 

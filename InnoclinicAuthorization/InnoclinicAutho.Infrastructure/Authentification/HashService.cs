@@ -3,23 +3,23 @@
 using InnoclinicAutho.Application.Interfaces;
 using Microsoft.AspNetCore.Identity;
 
-public class PasswordHasher : IPasswordHasherNode
+public class HashService : IHashService
 {
     private readonly IPasswordHasher<object> _passwordHasher;
 
-    public PasswordHasher()
+    public HashService()
     {
         _passwordHasher = new PasswordHasher<object>();
     }
 
-    public string HashPassword(string password)
+    public string GetHash(string input)
     {
-        return _passwordHasher.HashPassword(new object(), password);
+        return _passwordHasher.HashPassword(new object(), input);
     }
 
-    public bool VerifyPassword(string password, string hashedPassword)
+    public bool VerifyString(string input, string hashedInput)
     {
-        var result = _passwordHasher.VerifyHashedPassword(new object(), hashedPassword, password);
+        var result = _passwordHasher.VerifyHashedPassword(new object(), hashedInput, input);
 
         return result == PasswordVerificationResult.Success ||
                result == PasswordVerificationResult.SuccessRehashNeeded;
