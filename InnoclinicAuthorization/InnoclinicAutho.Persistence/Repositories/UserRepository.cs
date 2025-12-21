@@ -25,7 +25,7 @@ public class UserRepository : IUserRepository, IDisposable
 
     public async Task Delete(Guid userId)
     {
-        User? user= await _dbContext.Users.FirstOrDefaultAsync(u => u.ID == userId);
+        User? user= await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
         
         if (user != null)
             _dbContext.Users.Remove(user);
@@ -38,7 +38,7 @@ public class UserRepository : IUserRepository, IDisposable
 
     public async Task<User?> GetByIdAsync(Guid userId)
     {
-        return await _dbContext.Users.FirstOrDefaultAsync(u => u.ID == userId);
+        return await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
     }
 
     public async Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)

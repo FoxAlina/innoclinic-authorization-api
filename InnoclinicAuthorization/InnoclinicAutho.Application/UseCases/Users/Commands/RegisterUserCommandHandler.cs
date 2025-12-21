@@ -44,11 +44,11 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, R
         _userRepository.Insert(user);
         await _userRepository.SaveAsync(cancellationToken);
 
-        var token = _jwtService.GenerateToken(user.ID, user.Email, user.Role);
+        var token = _jwtService.GenerateToken(user.Id, user.Email, user.Role);
 
         return new RegisterUserResponse
             (
-            user.ID,
+            user.Id,
             user.Email,
             user.FirstName,
             user.LastName,

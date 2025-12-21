@@ -25,8 +25,8 @@ public class UsersController : ControllerBase
     {
         var user = new User()
         {
-            DateCreated = DateTime.UtcNow,
-            UserID = Guid.NewGuid(),
+            CreateDateTime = DateTime.UtcNow,
+            UserId = Guid.NewGuid(),
             IsDeleted = false,
             Email = "test@test.com",
             PasswordHash = "test"

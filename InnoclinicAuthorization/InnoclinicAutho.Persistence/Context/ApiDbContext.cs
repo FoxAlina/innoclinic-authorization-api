@@ -20,7 +20,7 @@ public class ApiDbContext : DbContext, IApiDbContext
     {
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.ID);
+            entity.HasKey(e => e.Id);
 
             entity.Property(e => e.Email)
                 .IsRequired()
@@ -44,7 +44,7 @@ public class ApiDbContext : DbContext, IApiDbContext
             entity.Property(e => e.IsDeleted)
                 .HasDefaultValue(false);
 
-            entity.Property(e => e.DateCreated)
+            entity.Property(e => e.CreateDateTime)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             entity.HasIndex(e => e.Email)
@@ -62,7 +62,7 @@ public class ApiDbContext : DbContext, IApiDbContext
 
         foreach (var entry in entries)
         {
-            entry.Entity.DateUpdated = DateTime.UtcNow;
+            entry.Entity.UpdateDateTime = DateTime.UtcNow;
         }
 
         return await base.SaveChangesAsync(cancellationToken);

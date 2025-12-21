@@ -7,11 +7,11 @@ public class BaseEntity
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public Guid ID { get; set; }
-    public DateTimeOffset DateCreated { get; set; } = DateTimeOffset.UtcNow;
-    public DateTimeOffset? DateUpdated { get; set; }
-    public DateTimeOffset? DateDeleted { get; set; }
-    public Guid UserID { get; set; }
+    public Guid Id { get; set; }
+    public DateTimeOffset CreateDateTime { get; set; } = DateTimeOffset.UtcNow;
+    public DateTimeOffset? UpdateDateTime { get; set; }
+    public DateTimeOffset? DeleteDateTime { get; set; }
+    public Guid UserId { get; set; }
     public bool IsDeleted { get; set; } = false;
 }
 
