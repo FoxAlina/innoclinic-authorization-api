@@ -2,11 +2,8 @@
 
 using InnoclinicAutho.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-public interface IApiDbContext
+public interface IApiDbContext: IDisposable
 {
     public DbSet<User> Users { get; }
     public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

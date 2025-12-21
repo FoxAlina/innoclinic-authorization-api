@@ -1,32 +1,31 @@
 ﻿namespace InnoclinicAutho.Application.UseCases.Users.Commands;
 
 using InnoclinicAutho.Application.Interfaces;
+using InnoclinicAutho.Application.Interfaces.Repositories;
 using InnoclinicAutho.Domain.Common;
 using InnoclinicAutho.Domain.Entities;
 using InnoclinicAutho.Domain.Exceptions;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, RegisterUserResponse>
 {
-    private readonly IApiDbContext _context;
+    private readonly IUserRepository _userRepository;
     private readonly IHashService _passwordHasher;
     private readonly IJwtService _jwtService;
 
     public RegisterUserCommandHandler(
-        IApiDbContext context,
+        IUserRepository userRepository,
         IHashService passwordHasher,
         IJwtService jwtService)
     {
-        _context = context;
+        _userRepository = userRepository;
         _passwordHasher = passwordHasher;
         _jwtService = jwtService;
     }
 
     public async Task<RegisterUserResponse> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
     {
-        var existingUser = await _context.Users
-            .FirstOrDefaultAsync(u => u.Email == request.Email, cancellationToken);
+        var existingUser = _userRepository.GetByEmailAsync(request.Email, cancellationToken).Result;
 
         if (existingUser != null)
         {
@@ -42,8 +41,8 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, R
             Role = UserRoles.Patient
         };
 
-        _context.Users.Add(user);
-        await _context.SaveChangesAsync(cancellationToken);
+        _userRepository.Insert(user);
+        await _userRepository.SaveAsync(cancellationToken);
 
         var token = _jwtService.GenerateToken(user.ID, user.Email, user.Role);
 
@@ -53,7 +52,6 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, R
             user.Email,
             user.FirstName,
             user.LastName,
-            token
-            );
+            token);
     }
 }
