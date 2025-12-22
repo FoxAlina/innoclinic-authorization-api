@@ -9,9 +9,9 @@ public class ApiDbContext : DbContext, IApiDbContext
 {
     public ApiDbContext() : base() { }
     public ApiDbContext(DbContextOptions<ApiDbContext> options) : base(options) { }
-    protected override void OnConfiguring(DbContextOptionsBuilder options)
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        options.UseNpgsql();
+        optionsBuilder.UseNpgsql();
     }
 
     public DbSet<User> Users { get; set; }
@@ -55,16 +55,4 @@ public class ApiDbContext : DbContext, IApiDbContext
         base.OnModelCreating(modelBuilder);
     }
 
-    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-    {
-        var entries = ChangeTracker.Entries<User>()
-            .Where(e => e.State == EntityState.Modified);
-
-        foreach (var entry in entries)
-        {
-            entry.Entity.UpdateDateTime = DateTime.UtcNow;
-        }
-
-        return await base.SaveChangesAsync(cancellationToken);
-    }
 }
