@@ -21,14 +21,16 @@ public class AuthController : ControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> SignUp([FromBody] RegisterUserCommand command)
     {
-        var result = await _mediator.Send(command);
+        if (command is null) return BadRequest();
 
-        return Ok(new
+        var response = await _mediator.Send(command);
+
+        if (response.Succcess)
         {
-            success = true,
-            message = "Signed up successfuly.",
-            data = result
-        });
+            return Ok(response);
+        }
+
+        return BadRequest(response);
     }
 
 }
