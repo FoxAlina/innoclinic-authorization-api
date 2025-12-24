@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace InnoclinicAutho.Persistence.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    [Migration("20251216220547_add-Identity-for-Roles")]
+    [Migration("20251224234814_add-Identity-for-Roles")]
     partial class addIdentityforRoles
     {
         /// <inheritdoc />
@@ -38,15 +38,12 @@ namespace InnoclinicAutho.Persistence.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("text");
 
-                    b.Property<DateTimeOffset>("DateCreated")
+                    b.Property<DateTimeOffset>("CreateDateTime")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-                    b.Property<DateTimeOffset?>("DateDeleted")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTimeOffset?>("DateUpdated")
+                    b.Property<DateTimeOffset?>("DeleteDateTime")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Email")
@@ -102,7 +99,10 @@ namespace InnoclinicAutho.Persistence.Migrations
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("boolean");
 
-                    b.Property<Guid>("UserID")
+                    b.Property<DateTimeOffset?>("UpdateDateTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("UserName")

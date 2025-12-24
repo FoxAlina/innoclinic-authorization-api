@@ -25,9 +25,29 @@ namespace InnoclinicAutho.Persistence.Migrations
                 newName: "AspNetUsers");
 
             migrationBuilder.RenameColumn(
+                name: "UserID",
+                table: "AspNetUsers",
+                newName: "UserId");
+
+            migrationBuilder.RenameColumn(
                 name: "ID",
                 table: "AspNetUsers",
                 newName: "Id");
+
+            migrationBuilder.RenameColumn(
+                name: "DateUpdated",
+                table: "AspNetUsers",
+                newName: "UpdateDateTime");
+
+            migrationBuilder.RenameColumn(
+                name: "DateDeleted",
+                table: "AspNetUsers",
+                newName: "LockoutEnd");
+
+            migrationBuilder.RenameColumn(
+                name: "DateCreated",
+                table: "AspNetUsers",
+                newName: "CreateDateTime");
 
             migrationBuilder.AlterColumn<string>(
                 name: "Email",
@@ -52,6 +72,12 @@ namespace InnoclinicAutho.Persistence.Migrations
                 type: "text",
                 nullable: true);
 
+            migrationBuilder.AddColumn<DateTimeOffset>(
+                name: "DeleteDateTime",
+                table: "AspNetUsers",
+                type: "timestamp with time zone",
+                nullable: true);
+
             migrationBuilder.AddColumn<bool>(
                 name: "EmailConfirmed",
                 table: "AspNetUsers",
@@ -65,12 +91,6 @@ namespace InnoclinicAutho.Persistence.Migrations
                 type: "boolean",
                 nullable: false,
                 defaultValue: false);
-
-            migrationBuilder.AddColumn<DateTimeOffset>(
-                name: "LockoutEnd",
-                table: "AspNetUsers",
-                type: "timestamp with time zone",
-                nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "NormalizedEmail",
@@ -324,15 +344,15 @@ namespace InnoclinicAutho.Persistence.Migrations
                 table: "AspNetUsers");
 
             migrationBuilder.DropColumn(
+                name: "DeleteDateTime",
+                table: "AspNetUsers");
+
+            migrationBuilder.DropColumn(
                 name: "EmailConfirmed",
                 table: "AspNetUsers");
 
             migrationBuilder.DropColumn(
                 name: "LockoutEnabled",
-                table: "AspNetUsers");
-
-            migrationBuilder.DropColumn(
-                name: "LockoutEnd",
                 table: "AspNetUsers");
 
             migrationBuilder.DropColumn(
@@ -368,9 +388,29 @@ namespace InnoclinicAutho.Persistence.Migrations
                 newName: "Users");
 
             migrationBuilder.RenameColumn(
+                name: "UserId",
+                table: "Users",
+                newName: "UserID");
+
+            migrationBuilder.RenameColumn(
                 name: "Id",
                 table: "Users",
                 newName: "ID");
+
+            migrationBuilder.RenameColumn(
+                name: "UpdateDateTime",
+                table: "Users",
+                newName: "DateUpdated");
+
+            migrationBuilder.RenameColumn(
+                name: "LockoutEnd",
+                table: "Users",
+                newName: "DateDeleted");
+
+            migrationBuilder.RenameColumn(
+                name: "CreateDateTime",
+                table: "Users",
+                newName: "DateCreated");
 
             migrationBuilder.AlterColumn<string>(
                 name: "Email",
