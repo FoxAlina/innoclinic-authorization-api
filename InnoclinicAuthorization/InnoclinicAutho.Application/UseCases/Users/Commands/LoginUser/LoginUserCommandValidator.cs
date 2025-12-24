@@ -1,20 +1,16 @@
-﻿using FluentValidation;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace InnoclinicAutho.Application.UseCases.Users.Commands.LoginUser;
 
-namespace InnoclinicAutho.Application.UseCases.Users.Commands.LoginUser
+using FluentValidation;
+
+public class LoginUserCommandValidator : AbstractValidator<LoginUserCommand>
 {
-    public class LoginUserCommandValidator : AbstractValidator<LoginUserCommand>
+    public LoginUserCommandValidator()
     {
-        public LoginUserCommandValidator()
-        {
-            RuleFor(x => x.Email)
-                .NotEmpty().WithMessage("Email is required.")
-                .EmailAddress().WithMessage("Invalid email address.");
+        RuleFor(x => x.Email)
+            .NotEmpty().WithMessage("Email is required.")
+            .EmailAddress().WithMessage("Invalid email address.");
 
-            RuleFor(x => x.Password)
-                .NotEmpty().WithMessage("Password is required.");
-        }
+        RuleFor(x => x.Password)
+            .NotEmpty().WithMessage("Password is required.");
     }
 }
