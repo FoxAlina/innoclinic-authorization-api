@@ -1,39 +1,43 @@
-﻿using InnoclinicAutho.Application.Interfaces;
+﻿namespace InnoclinicAutho.Application.UseCases.Users.Commands.RegisterUser;
+
+using InnoclinicAutho.Application.Interfaces;
+using InnoclinicAutho.Application.Interfaces.Repositories;
+using InnoclinicAutho.Application.UseCases.Common;
 using InnoclinicAutho.Domain.Common;
 using InnoclinicAutho.Domain.Entities;
 using InnoclinicAutho.Domain.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using System.Data;
 
-namespace InnoclinicAutho.Application.UseCases.Users.Commands.RegisterUser
+public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, BaseResponse<RegisterUserResponse>>
 {
-    public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, RegisterUserResponse>
+    private readonly IUserRepository _userRepository;
+	private readonly IHashService _passwordHasher;
+	private readonly IJwtService _jwtService;
+	private readonly UserManager<User> _userManager;
+	private readonly RoleManager<IdentityRole<Guid>> _roleManager;
+	
+	public RegisterUserCommandHandler(
+		IUserRepository userRepository,
+		IHashService passwordHasher,
+		IJwtService jwtService,
+		UserManager<User> userManager,
+		RoleManager<IdentityRole<Guid>> roleManager)
+	{
+        _userRepository = userRepository;
+		_passwordHasher = passwordHasher;
+		_jwtService = jwtService;
+		_userManager = userManager;
+		_roleManager = roleManager;
+	}
+	
+    public async Task<BaseResponse<RegisterUserResponse>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
     {
-        private readonly IApiDbContext _context;
-        private readonly IPasswordHasherNode _passwordHasher;
-        private readonly IJwtService _jwtService;
-        private readonly UserManager<User> _userManager;
-        private readonly RoleManager<IdentityRole<Guid>> _roleManager;
-        public RegisterUserCommandHandler(
-            IApiDbContext context,
-            IPasswordHasherNode passwordHasher,
-            IJwtService jwtService,
-            UserManager<User> userManager,
-            RoleManager<IdentityRole<Guid>> roleManager)
-        {
-            _context = context;
-            _passwordHasher = passwordHasher;
-            _jwtService = jwtService;
-            _userManager = userManager;
-            _roleManager = roleManager;
-        }
+        var response = new BaseResponse<RegisterUserResponse>();
 
-        public async Task<RegisterUserResponse> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
+        try
         {
-            var existingUser = await _context.Users
-                .FirstOrDefaultAsync(u => u.Email == request.Email, cancellationToken);
+            var existingUser = _userRepository.GetByEmailAsync(request.Email, cancellationToken).Result;
 
             if (existingUser != null)
             {
@@ -61,14 +65,24 @@ namespace InnoclinicAutho.Application.UseCases.Users.Commands.RegisterUser
 
             var token = _jwtService.GenerateToken(user.Id, user.Email, [UserRoles.Patient.ToString()]);
 
-            return new RegisterUserResponse
-                (
-                    user.Id,
-                    user.Email,
-                    user.FirstName,
-                    user.LastName,
-                    token
-                );
+            response.Data = new RegisterUserResponse (
+                user.Id,
+                user.Email,
+                user.FirstName,
+                user.LastName,
+                token);
+
+            if (response.Data is not null)
+            {
+                response.Succcess = true;
+                response.Message = "User registered successfuly!";
+            }
         }
+        catch (Exception ex)
+        {
+            response.Message = ex.Message;
+        }
+
+        return response;
     }
 }

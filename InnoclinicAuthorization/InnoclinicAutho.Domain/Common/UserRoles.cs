@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace InnoclinicAutho.Domain.Common;
 
-namespace InnoclinicAutho.Domain.Common
+public enum UserRoles
 {
-    public enum UserRoles
-    {
-        Patient,
-        Doctor,
-        Aadmin
-    }
+    Patient = 0,
+    Doctor = 1,
+    Admin = 2
 }
+

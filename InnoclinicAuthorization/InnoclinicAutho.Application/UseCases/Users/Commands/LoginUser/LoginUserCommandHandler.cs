@@ -1,40 +1,37 @@
-﻿using InnoclinicAutho.Application.Interfaces;
-using InnoclinicAutho.Domain.Common;
+namespace InnoclinicAutho.Application.UseCases.Users.Commands.LoginUser;
+
+using InnoclinicAutho.Application.Interfaces;
+using InnoclinicAutho.Application.UseCases.Common;
 using InnoclinicAutho.Domain.Entities;
 using InnoclinicAutho.Domain.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.JsonWebTokens;
 using System;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Text;
 
-namespace InnoclinicAutho.Application.UseCases.Users.Commands.LoginUser
+public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, BaseResponse<LoginUserResponse>>
 {
-    public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, LoginUserResponse>
-    {
-        private readonly IApiDbContext _context;
-        private readonly IPasswordHasherNode _passwordHasher;
-        private readonly IJwtService _jwtService;
-        private readonly UserManager<User> _userManager;
-        private readonly RoleManager<IdentityRole<Guid>> _roleManager;
-        public LoginUserCommandHandler(
-            IApiDbContext context,
-            IPasswordHasherNode passwordHasher,
-            IJwtService jwtService,
-            UserManager<User> userManager,
-            RoleManager<IdentityRole<Guid>> roleManager)
-        {
-            _context = context;
-            _passwordHasher = passwordHasher;
-            _jwtService = jwtService;
-            _userManager = userManager;
-            _roleManager = roleManager;
-        }
+	private readonly IHashService _passwordHasher;
+	private readonly IJwtService _jwtService;
+	private readonly UserManager<User> _userManager;
+	private readonly RoleManager<IdentityRole<Guid>> _roleManager;
+	
+	public LoginUserCommandHandler(
+        IHashService passwordHasher,
+		IJwtService jwtService,
+		UserManager<User> userManager,
+		RoleManager<IdentityRole<Guid>> roleManager)
+	{
+		_passwordHasher = passwordHasher;
+		_jwtService = jwtService;
+		_userManager = userManager;
+		_roleManager = roleManager;
+	}
 
-        public async Task<LoginUserResponse> Handle(LoginUserCommand request, CancellationToken cancellationToken)
+    public async Task<BaseResponse<LoginUserResponse>> Handle(LoginUserCommand request, CancellationToken cancellationToken)
+    {
+        var response = new BaseResponse<LoginUserResponse>();
+
+        try
         {
             var user = await _userManager.FindByNameAsync(request.Email);
 
@@ -46,13 +43,24 @@ namespace InnoclinicAutho.Application.UseCases.Users.Commands.LoginUser
             var userRoles = await _userManager.GetRolesAsync(user);
             var token = _jwtService.GenerateToken(user.Id, user.Email, userRoles);
 
-            return new LoginUserResponse(
+            response.Data = new LoginUserResponse(
                 user.Id,
                 user.Email,
                 user.FirstName,
                 user.LastName,
-                token
-            );
+                token);
+
+            if (response.Data is not null)
+            {
+                response.Succcess = true;
+                response.Message = "User logged in successfuly!";
+            }
         }
+        catch (Exception ex)
+        {
+            response.Message = ex.Message;
+        }
+
+        return response;
     }
 }

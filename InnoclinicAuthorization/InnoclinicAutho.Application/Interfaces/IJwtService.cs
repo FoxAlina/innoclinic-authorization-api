@@ -1,10 +1,9 @@
-﻿
+﻿namespace InnoclinicAutho.Application.Interfaces;
+
 using InnoclinicAutho.Domain.Common;
 
-namespace InnoclinicAutho.Application.Interfaces
+public interface IJwtService
 {
-    public interface IJwtService
-    {
-        public string GenerateToken(Guid userId, string email, IList<string> userRoles);
-    }
+	public string GenerateToken(Guid userId, string email, IList<string> userRoles);
 }
+

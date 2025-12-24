@@ -1,17 +1,17 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿namespace InnoclinicAutho.Domain.Common;
+
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace InnoclinicAutho.Domain.Common
+public interface IBaseEntity
 {
-    public interface IBaseEntity
-    {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid Id { get; set; }
-        public DateTimeOffset DateCreated { get; set; }
-        public DateTimeOffset? DateUpdated { get; set; }
-        public DateTimeOffset? DateDeleted { get; set; }
-        public Guid UserID { get; set; }
-        public bool IsDeleted { get; set; }
-    }
+	[Key]
+	[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+	public Guid Id { get; set; }
+	public DateTimeOffset CreateDateTime { get; set; }
+	public DateTimeOffset? UpdateDateTime { get; set; }
+	public DateTimeOffset? DeleteDateTime { get; set; }
+	public Guid UserId { get; set; }
+	public bool IsDeleted { get; set; }
 }
+
