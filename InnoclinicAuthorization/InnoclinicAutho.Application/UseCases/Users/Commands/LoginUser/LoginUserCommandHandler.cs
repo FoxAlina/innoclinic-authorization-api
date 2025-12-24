@@ -11,11 +11,11 @@ namespace InnoclinicAutho.Application.UseCases.Users.Commands.LoginUser
     public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, LoginUserResponse>
     {
         private readonly IApiDbContext _context;
-        private readonly IPasswordHasherNode _passwordHasher;
+        private readonly IHashService _passwordHasher;
         private readonly IJwtService _jwtService;
         public LoginUserCommandHandler(
             IApiDbContext context,
-            IPasswordHasherNode passwordHasher,
+            IHashService passwordHasher,
             IJwtService jwtService)
         {
             _context = context;
@@ -28,15 +28,15 @@ namespace InnoclinicAutho.Application.UseCases.Users.Commands.LoginUser
             var user = await _context.Users
                 .FirstOrDefaultAsync(e => e.Email == request.Email);
 
-            if (user == null || !_passwordHasher.VerifyPassword(request.Password, user.PasswordHash))
+            if (user == null || !_passwordHasher.VerifyString(request.Password, user.PasswordHash))
             {
                 throw new DomainException("Invalid email or password.");
             }
 
-            var token = _jwtService.GenerateToken(user.ID, user.Email, user.Role);
+            var token = _jwtService.GenerateToken(user.Id, user.Email, user.Role);
 
             return new LoginUserResponse(
-                user.ID,
+                user.Id,
                 user.Email,
                 user.FirstName,
                 user.LastName,

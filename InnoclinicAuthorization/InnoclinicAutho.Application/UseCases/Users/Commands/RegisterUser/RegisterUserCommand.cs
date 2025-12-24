@@ -1,14 +1,13 @@
-﻿using MediatR;
+﻿namespace InnoclinicAutho.Application.UseCases.Users.Commands.RegisterUser;
 
-namespace InnoclinicAutho.Application.UseCases.Users.Commands.RegisterUser
-{
-    public record RegisterUserCommand
-    (
-        string Email,
-        string Password,
-        string FirstName,
-        string LastName,
-        string ConfirmedPassword
-    ) : IRequest<RegisterUserResponse>;
+using InnoclinicAutho.Application.UseCases.Common;
+using MediatR;
 
-}
+public record RegisterUserCommand
+(
+    string Email,
+    string Password,
+    string FirstName,
+    string LastName,
+    string ConfirmedPassword
+) : IRequest<BaseResponse<RegisterUserResponse>>;
