@@ -1,6 +1,7 @@
 using FluentValidation;
 using InnoclinicAutho.Application.Interfaces.Repositories;
 using InnoclinicAutho.Application.UseCases.Behavior;
+using InnoclinicAutho.Application.UseCases.Users.Commands.RegisterUser;
 using InnoclinicAutho.Application.UseCases.Users.Commands.RegisterUser.Patient;
 using InnoclinicAutho.Persistence.Extensions;
 using InnoclinicAutho.Persistence.Repositories;
@@ -29,7 +30,7 @@ builder.Services
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining(typeof(RegisterPatientCommandHandler)));
-builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
+builder.Services.AddValidatorsFromAssemblyContaining(typeof(RegisterUserCommandValidator));
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
 var app = builder.Build();
