@@ -4,6 +4,8 @@ using InnoclinicAutho.Application.UseCases.Users.Commands.RegisterUser;
 using InnoclinicAutho.Application.UseCases.Users.Commands.LoginUser;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using InnoclinicAutho.Application.UseCases.Users.Commands.RegisterUser.Admin;
+using InnoclinicAutho.Application.UseCases.Users.Commands.LoginUser.Admin;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -52,4 +54,39 @@ public class AuthController : ControllerBase
         return BadRequest(response);
 	}
 
+    [HttpPost("sign-up/admin")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> AdminSignUp([FromBody] RegisterAdminCommand command)
+    {
+        if (command is null) return BadRequest();
+
+        var response = await _mediator.Send(command);
+
+        if (response.Succcess)
+        {
+            return Ok(response);
+        }
+
+        return BadRequest(response);
+    }
+
+    [HttpPost("sign-in/admin")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> AdminSignIn([FromBody] LoginAdminCommand command)
+    {
+        if (command is null) return BadRequest();
+
+        var response = await _mediator.Send(command);
+
+        if (response.Succcess)
+        {
+            return Ok(response);
+        }
+
+        return BadRequest(response);
+    }
 }

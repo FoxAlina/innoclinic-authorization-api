@@ -9,13 +9,15 @@ using InnoclinicAutho.Domain.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
-public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, BaseResponse<RegisterUserResponse>>
+public class RegisterUserCommandHandler<T> : IRequestHandler<T, BaseResponse<RegisterUserResponse>> where T: RegisterUserCommand
 {
     private readonly IUserRepository _userRepository;
 	private readonly IHashService _passwordHasher;
 	private readonly IJwtService _jwtService;
 	private readonly UserManager<User> _userManager;
 	private readonly RoleManager<IdentityRole<Guid>> _roleManager;
+
+    protected UserRoles _userRole = UserRoles.Patient;
 	
 	public RegisterUserCommandHandler(
 		IUserRepository userRepository,
@@ -31,7 +33,7 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, B
 		_roleManager = roleManager;
 	}
 	
-    public async Task<BaseResponse<RegisterUserResponse>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
+    public async Task<BaseResponse<RegisterUserResponse>> Handle(T request, CancellationToken cancellationToken)
     {
         var response = new BaseResponse<RegisterUserResponse>();
 
@@ -57,13 +59,13 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, B
             if (!createUserResult.Succeeded)
                 throw new DomainException("User creation failed! Please check user details and try again./nPassword should be non alpanumeric, should have atleast 6 symbols and 1 digit.");
 
-            if (!await _roleManager.RoleExistsAsync(UserRoles.Patient.ToString()))
-                await _roleManager.CreateAsync(new IdentityRole<Guid>(UserRoles.Patient.ToString()));
+            if (!await _roleManager.RoleExistsAsync(_userRole.ToString()))
+                await _roleManager.CreateAsync(new IdentityRole<Guid>(_userRole.ToString()));
 
-            if (await _roleManager.RoleExistsAsync(UserRoles.Patient.ToString()))
-                await _userManager.AddToRoleAsync(user, UserRoles.Patient.ToString());
+            if (await _roleManager.RoleExistsAsync(_userRole.ToString()))
+                await _userManager.AddToRoleAsync(user, _userRole.ToString());
 
-            var token = _jwtService.GenerateToken(user.Id, user.Email, [UserRoles.Patient.ToString()]);
+            var token = _jwtService.GenerateToken(user.Id, user.Email, [_userRole.ToString()]);
 
             response.Data = new RegisterUserResponse (
                 user.Id,

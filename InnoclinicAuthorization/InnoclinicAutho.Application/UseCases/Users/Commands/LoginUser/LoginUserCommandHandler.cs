@@ -2,32 +2,29 @@ namespace InnoclinicAutho.Application.UseCases.Users.Commands.LoginUser;
 
 using InnoclinicAutho.Application.Interfaces;
 using InnoclinicAutho.Application.UseCases.Common;
+using InnoclinicAutho.Domain.Common;
 using InnoclinicAutho.Domain.Entities;
 using InnoclinicAutho.Domain.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using System;
 
-public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, BaseResponse<LoginUserResponse>>
+public class LoginUserCommandHandler<T> : IRequestHandler<T, BaseResponse<LoginUserResponse>> where T : LoginUserCommand
 {
-	private readonly IHashService _passwordHasher;
 	private readonly IJwtService _jwtService;
 	private readonly UserManager<User> _userManager;
-	private readonly RoleManager<IdentityRole<Guid>> _roleManager;
-	
-	public LoginUserCommandHandler(
-        IHashService passwordHasher,
+
+    protected UserRoles _userRole = UserRoles.Patient;
+
+    public LoginUserCommandHandler(
 		IJwtService jwtService,
-		UserManager<User> userManager,
-		RoleManager<IdentityRole<Guid>> roleManager)
+		UserManager<User> userManager)
 	{
-		_passwordHasher = passwordHasher;
 		_jwtService = jwtService;
 		_userManager = userManager;
-		_roleManager = roleManager;
 	}
 
-    public async Task<BaseResponse<LoginUserResponse>> Handle(LoginUserCommand request, CancellationToken cancellationToken)
+    public async Task<BaseResponse<LoginUserResponse>> Handle(T request, CancellationToken cancellationToken)
     {
         var response = new BaseResponse<LoginUserResponse>();
 
@@ -39,6 +36,13 @@ public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, BaseRes
                 throw new DomainException("Invalid email.");
             if (!await _userManager.CheckPasswordAsync(user, request.Password))
                 throw new DomainException("Invalid password.");
+
+            var isInRole = await _userManager.IsInRoleAsync(user, _userRole.ToString());
+
+            if (!isInRole)
+            {
+                throw new MissingRoleException(user.Email, _userRole.ToString());
+            }
 
             var userRoles = await _userManager.GetRolesAsync(user);
             var token = _jwtService.GenerateToken(user.Id, user.Email, userRoles);
