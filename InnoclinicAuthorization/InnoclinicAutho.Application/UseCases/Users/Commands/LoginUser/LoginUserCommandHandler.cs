@@ -3,10 +3,11 @@
 using InnoclinicAutho.Application.Interfaces;
 using InnoclinicAutho.Application.Interfaces.Repositories;
 using InnoclinicAutho.Application.UseCases.Common;
+using InnoclinicAutho.Application.UseCases.Users.DTOs;
 using InnoclinicAutho.Domain.Exceptions;
 using MediatR;
 
-public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, BaseResponse<LoginUserResponse>>
+public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, BaseResponse<UserDto>>
 {
     private readonly IUserRepository _userRepository;
     private readonly IHashService _passwordHasher;
@@ -21,9 +22,9 @@ public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, BaseRes
         _jwtService = jwtService;
     }
 
-    public async Task<BaseResponse<LoginUserResponse>> Handle(LoginUserCommand request, CancellationToken cancellationToken)
+    public async Task<BaseResponse<UserDto>> Handle(LoginUserCommand request, CancellationToken cancellationToken)
     {
-        var response = new BaseResponse<LoginUserResponse>();
+        var response = new BaseResponse<UserDto>();
 
         try
         {
@@ -36,7 +37,7 @@ public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, BaseRes
 
             var token = _jwtService.GenerateToken(user.Id, user.Email, user.Role);
 
-            response.Data = new LoginUserResponse(
+            response.Data = new UserDto(
                 user.Id,
                 user.Email,
                 user.FirstName,
