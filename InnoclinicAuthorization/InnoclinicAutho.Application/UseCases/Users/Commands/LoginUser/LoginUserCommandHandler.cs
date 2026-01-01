@@ -1,22 +1,22 @@
 ﻿namespace InnoclinicAutho.Application.UseCases.Users.Commands.LoginUser;
 
 using InnoclinicAutho.Application.Interfaces;
+using InnoclinicAutho.Application.Interfaces.Repositories;
 using InnoclinicAutho.Application.UseCases.Common;
 using InnoclinicAutho.Domain.Exceptions;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, BaseResponse<LoginUserResponse>>
 {
-    private readonly IApiDbContext _context;
+    private readonly IUserRepository _userRepository;
     private readonly IHashService _passwordHasher;
     private readonly IJwtService _jwtService;
     public LoginUserCommandHandler(
-        IApiDbContext context,
+        IUserRepository userRepository,
         IHashService passwordHasher,
         IJwtService jwtService)
     {
-        _context = context;
+        _userRepository = userRepository;
         _passwordHasher = passwordHasher;
         _jwtService = jwtService;
     }
@@ -27,8 +27,7 @@ public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, BaseRes
 
         try
         {
-            var user = await _context.Users
-            .FirstOrDefaultAsync(e => e.Email == request.Email);
+            var user = await _userRepository.GetByEmailAsync(request.Email, cancellationToken);
 
             if (user == null || !_passwordHasher.VerifyString(request.Password, user.PasswordHash))
             {
