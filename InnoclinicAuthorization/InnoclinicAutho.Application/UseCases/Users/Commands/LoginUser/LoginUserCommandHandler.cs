@@ -2,6 +2,7 @@ namespace InnoclinicAutho.Application.UseCases.Users.Commands.LoginUser;
 
 using InnoclinicAutho.Application.Interfaces;
 using InnoclinicAutho.Application.UseCases.Common;
+using InnoclinicAutho.Application.UseCases.Users.DTOs;
 using InnoclinicAutho.Domain.Common;
 using InnoclinicAutho.Domain.Entities;
 using InnoclinicAutho.Domain.Exceptions;
@@ -9,9 +10,9 @@ using MediatR;
 using Microsoft.AspNetCore.Identity;
 using System;
 
-public class LoginUserCommandHandler<T> : IRequestHandler<T, BaseResponse<LoginUserResponse>> where T : LoginUserCommand
+public class LoginUserCommandHandler<T> : IRequestHandler<T, BaseResponse<UserDto>> where T : LoginUserCommand
 {
-	private readonly IJwtService _jwtService;
+    private readonly IJwtService _jwtService;
 	private readonly UserManager<User> _userManager;
 
     protected UserRoles _userRole = UserRoles.Patient;
@@ -24,9 +25,9 @@ public class LoginUserCommandHandler<T> : IRequestHandler<T, BaseResponse<LoginU
 		_userManager = userManager;
 	}
 
-    public async Task<BaseResponse<LoginUserResponse>> Handle(T request, CancellationToken cancellationToken)
+    public async Task<BaseResponse<UserDto>> Handle(T request, CancellationToken cancellationToken)
     {
-        var response = new BaseResponse<LoginUserResponse>();
+        var response = new BaseResponse<UserDto>();
 
         try
         {
@@ -47,7 +48,7 @@ public class LoginUserCommandHandler<T> : IRequestHandler<T, BaseResponse<LoginU
             var userRoles = await _userManager.GetRolesAsync(user);
             var token = _jwtService.GenerateToken(user.Id, user.Email, userRoles);
 
-            response.Data = new LoginUserResponse(
+            response.Data = new UserDto(
                 user.Id,
                 user.Email,
                 user.FirstName,
