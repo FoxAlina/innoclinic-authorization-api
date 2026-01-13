@@ -1,4 +1,4 @@
-﻿namespace InnoclinicAutho.Application.UseCases.Users.Commands;
+﻿namespace InnoclinicAutho.Application.UseCases.Users.Commands.RegisterUser;
 
 using FluentValidation;
 
