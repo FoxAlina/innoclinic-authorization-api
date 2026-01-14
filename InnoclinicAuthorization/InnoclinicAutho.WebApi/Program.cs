@@ -26,6 +26,8 @@ builder.Services
     .AddJwtAuth(builder.Configuration);
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+builder.Services.AddScoped<IUserRoleRepository, UserRoleRepository>();
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining(typeof(RegisterUserCommandHandler)));
 builder.Services.AddValidatorsFromAssemblyContaining(typeof(RegisterUserCommandValidator));

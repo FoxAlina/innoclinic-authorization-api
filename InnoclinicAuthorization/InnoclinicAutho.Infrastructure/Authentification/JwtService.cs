@@ -10,16 +10,20 @@ using System.Text;
 
 public class JwtService(IConfiguration configuration) : IJwtService
 {
-    public string GenerateToken(Guid userId, string email, UserRoles _userRole)
+    public string GenerateToken(Guid userId, string email, List<string> userRoles)
     {
         var claims = new List<Claim>
             {
                 new (JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new (JwtRegisteredClaimNames.Sub, userId.ToString()),
                 new (JwtRegisteredClaimNames.Email, email),
-                new (JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64),
-                new (ClaimTypes.Role, _userRole.ToString())
+                new (JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64)
             };
+
+        foreach (var role in userRoles)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, role.ToString()));
+        }
 
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSettings:Secret"]!));
 

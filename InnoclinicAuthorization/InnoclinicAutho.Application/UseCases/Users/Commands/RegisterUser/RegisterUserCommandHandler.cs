@@ -12,15 +12,21 @@ using MediatR;
 public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, BaseResponse<UserDto>>
 {
     private readonly IUserRepository _userRepository;
+    private readonly IRoleRepository _roleRepository;
+    private readonly IUserRoleRepository _userRoleRepository;
     private readonly IHashService _passwordHasher;
     private readonly IJwtService _jwtService;
 
     public RegisterUserCommandHandler(
         IUserRepository userRepository,
+        IRoleRepository roleRepository,
+        IUserRoleRepository userRoleRepository,
         IHashService passwordHasher,
         IJwtService jwtService)
     {
         _userRepository = userRepository;
+        _roleRepository = roleRepository;
+        _userRoleRepository = userRoleRepository;
         _passwordHasher = passwordHasher;
         _jwtService = jwtService;
     }
@@ -43,14 +49,38 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, B
                 Email = request.Email,
                 FirstName = request.FirstName,
                 LastName = request.LastName,
-                PasswordHash = _passwordHasher.GetHash(request.Password),
-                Role = UserRoles.Patient
+                PasswordHash = _passwordHasher.GetHash(request.Password)
             };
 
             _userRepository.Insert(user);
             await _userRepository.SaveAsync(cancellationToken);
 
-            var token = _jwtService.GenerateToken(user.Id, user.Email, user.Role);
+            var role = await _roleRepository.GetByNameAsync(UserRoles.Patient.ToString(), cancellationToken);
+            if (role == null)
+            {
+                role = new Role
+                {
+                    RoleName = UserRoles.Patient.ToString()
+                };
+
+                _roleRepository.Insert(role);
+                await _roleRepository.SaveAsync(cancellationToken);
+            }
+
+            var userRole = await _userRoleRepository.GetByUserIdRoleNameAsync(user.Id, role.RoleName, cancellationToken);
+            if (userRole == null)
+            {
+                userRole = new UserRole
+                {
+                    UserId = user.Id,
+                    RoleId = role.Id
+                };
+
+                _userRoleRepository.Insert(userRole);
+                await _userRoleRepository.SaveAsync(cancellationToken);
+            }
+            
+            var token = _jwtService.GenerateToken(user.Id, user.Email, new List<string> { role.RoleName });
 
             response.Data = new UserDto
                 (

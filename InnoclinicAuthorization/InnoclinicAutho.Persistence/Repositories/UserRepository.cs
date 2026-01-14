@@ -11,7 +11,7 @@ public class UserRepository : BaseRepository<User>, IUserRepository
 {
     public UserRepository(IApiDbContext dbContext) : base(dbContext) { }
 
-    public async Task Delete(Guid id)
+    public async Task DeleteAsync(Guid id)
     {
         User? user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == id);
 
@@ -24,9 +24,9 @@ public class UserRepository : BaseRepository<User>, IUserRepository
         return await _dbContext.Users.ToListAsync();
     }
 
-    public async Task<User?> GetByIdAsync(Guid id)
+    public async Task<User?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == id);
+        return await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == id, cancellationToken);
     }
 
     public async Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)

@@ -6,4 +6,3 @@ public enum UserRoles
     Doctor = 1,
     Admin = 2
 }
-
