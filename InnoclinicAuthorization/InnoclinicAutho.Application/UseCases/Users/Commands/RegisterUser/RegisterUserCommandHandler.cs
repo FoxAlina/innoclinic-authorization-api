@@ -9,13 +9,15 @@ using InnoclinicAutho.Domain.Entities;
 using InnoclinicAutho.Domain.Exceptions;
 using MediatR;
 
-public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, BaseResponse<UserDto>>
+public class RegisterUserCommandHandler<T> : IRequestHandler<T, BaseResponse<UserDto>> where T : RegisterUserCommand
 {
     private readonly IUserRepository _userRepository;
     private readonly IRoleRepository _roleRepository;
     private readonly IUserRoleRepository _userRoleRepository;
     private readonly IHashService _passwordHasher;
     private readonly IJwtService _jwtService;
+
+    protected UserRoles _userRole = UserRoles.Patient;
 
     public RegisterUserCommandHandler(
         IUserRepository userRepository,
@@ -31,7 +33,7 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, B
         _jwtService = jwtService;
     }
 
-    public async Task<BaseResponse<UserDto>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
+    public async Task<BaseResponse<UserDto>> Handle(T request, CancellationToken cancellationToken)
     {
         var response = new BaseResponse<UserDto>();
 
@@ -55,12 +57,12 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, B
             _userRepository.Insert(user);
             await _userRepository.SaveAsync(cancellationToken);
 
-            var role = await _roleRepository.GetByNameAsync(UserRoles.Patient.ToString(), cancellationToken);
+            var role = await _roleRepository.GetByNameAsync(_userRole.ToString(), cancellationToken);
             if (role == null)
             {
                 role = new Role
                 {
-                    RoleName = UserRoles.Patient.ToString()
+                    RoleName = _userRole.ToString()
                 };
 
                 _roleRepository.Insert(role);

@@ -1,7 +1,8 @@
 namespace InnoclinicAutho.WebApi.Controllers;
 
-using InnoclinicAutho.Application.UseCases.Users.Commands.RegisterUser;
 using InnoclinicAutho.Application.UseCases.Users.Commands.LoginUser;
+using InnoclinicAutho.Application.UseCases.Users.Commands.RegisterUser;
+using InnoclinicAutho.Application.UseCases.Users.Commands.RegisterUser.Admin;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -33,8 +34,26 @@ public class AuthController : ControllerBase
 
         return BadRequest(response);
     }
-	
-	[HttpPost("sign-in")]
+
+    [HttpPost("sign-up/admin")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> SignUpAdmin([FromBody] RegisterAdminCommand command)
+    {
+        if (command is null) return BadRequest();
+
+        var response = await _mediator.Send(command);
+
+        if (response.Succcess)
+        {
+            return Ok(response);
+        }
+
+        return BadRequest(response);
+    }
+
+    [HttpPost("sign-in")]
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
 	[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]

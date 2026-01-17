@@ -4,8 +4,6 @@ using InnoclinicAutho.Application.Interfaces;
 using InnoclinicAutho.Application.Interfaces.Repositories;
 using InnoclinicAutho.Application.UseCases.Common;
 using InnoclinicAutho.Application.UseCases.Users.DTOs;
-using InnoclinicAutho.Domain.Common;
-using InnoclinicAutho.Domain.Entities;
 using InnoclinicAutho.Domain.Exceptions;
 using MediatR;
 
@@ -41,12 +39,6 @@ public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, BaseRes
             if (user == null || !_passwordHasher.VerifyString(request.Password, user.PasswordHash))
             {
                 throw new DomainException("Invalid email or password.");
-            }
-
-            var userRole = await _userRoleRepository.GetByUserIdRoleNameAsync(user.Id, UserRoles.Patient.ToString(), cancellationToken);
-            if (userRole == null)
-            {
-                throw new MissingRoleException(user.Email, UserRoles.Patient.ToString());
             }
 
             var userRoleNames = await _userRoleRepository.GetAllRoleNamesByUserIdAsync(user.Id, cancellationToken);
