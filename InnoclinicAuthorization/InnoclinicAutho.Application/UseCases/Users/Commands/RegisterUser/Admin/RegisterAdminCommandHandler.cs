@@ -10,8 +10,15 @@ public class RegisterAdminCommandHandler : RegisterUserCommandHandler<RegisterAd
         IRoleRepository roleRepository,
         IUserRoleRepository userRoleRepository,
         IHashService passwordHasher,
-        IJwtService jwtService)
-        : base(userRepository, roleRepository, userRoleRepository, passwordHasher, jwtService)
+        IJwtService jwtService,
+        ICacheService cacheService)
+        : base(
+            userRepository, 
+            roleRepository, 
+            userRoleRepository, 
+            passwordHasher, 
+            jwtService, 
+            cacheService)
     {
         _userRole = Domain.Common.UserRoles.Admin;
     }

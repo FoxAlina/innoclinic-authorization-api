@@ -2,8 +2,10 @@
 
 using InnoclinicAutho.Application.Interfaces;
 using InnoclinicAutho.Application.Interfaces.Repositories;
+using InnoclinicAutho.Application.UseCases.Cache;
 using InnoclinicAutho.Application.UseCases.Common;
 using InnoclinicAutho.Application.UseCases.Users.DTOs;
+using InnoclinicAutho.Domain.Entities;
 using InnoclinicAutho.Domain.Exceptions;
 using MediatR;
 
@@ -14,18 +16,21 @@ public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, BaseRes
     private readonly IUserRoleRepository _userRoleRepository;
     private readonly IHashService _passwordHasher;
     private readonly IJwtService _jwtService;
+    private readonly ICacheService _cacheService;
     public LoginUserCommandHandler(
         IUserRepository userRepository,
         IRoleRepository roleRepository,
         IUserRoleRepository userRoleRepository,
         IHashService passwordHasher,
-        IJwtService jwtService)
+        IJwtService jwtService,
+        ICacheService cacheService)
     {
         _userRepository = userRepository;
         _roleRepository = roleRepository;
         _userRoleRepository = userRoleRepository;
         _passwordHasher = passwordHasher;
         _jwtService = jwtService;
+        _cacheService = cacheService;
     }
 
     public async Task<BaseResponse<UserDto>> Handle(LoginUserCommand request, CancellationToken cancellationToken)
@@ -43,7 +48,27 @@ public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, BaseRes
 
             var userRoleNames = await _userRoleRepository.GetAllRoleNamesByUserIdAsync(user.Id, cancellationToken);
 
-            var token = _jwtService.GenerateToken(user.Id, user.Email, userRoleNames.ToList());
+            string token;
+            var cacheKey = $"user:{user.Id}";
+            CachedUser cachedValue = await _cacheService.GetAsync<CachedUser>(cacheKey, cancellationToken);
+
+            if (cachedValue == null)
+            {
+                token = _jwtService.GenerateToken(user.Id, user.Email, userRoleNames.ToList());
+
+                await _cacheService.SetAsync(
+                    cacheKey,
+                    new CachedUser(
+                        user.Id,
+                        user.Email,
+                        user.FirstName,
+                        user.LastName,
+                        await _userRoleRepository.GetAllRoleNamesByUserIdAsync(user.Id, cancellationToken),
+                        token),
+                    TimeSpan.FromHours(1),
+                    cancellationToken);
+            }
+            else token = cachedValue.Token;
 
             response.Data = new UserDto(
                 user.Id,
