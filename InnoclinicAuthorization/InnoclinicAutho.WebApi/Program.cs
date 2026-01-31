@@ -1,10 +1,9 @@
 using FluentValidation;
-using InnoclinicAutho.Application.Interfaces;
 using InnoclinicAutho.Application.Interfaces.Repositories;
 using InnoclinicAutho.Application.UseCases.Behavior;
 using InnoclinicAutho.Application.UseCases.Users.Commands.RegisterUser;
 using InnoclinicAutho.Application.UseCases.Users.Commands.RegisterUser.Patient;
-using InnoclinicAutho.Infrastructure.Caching;
+using InnoclinicAutho.Infrastructure.Extensions;
 using InnoclinicAutho.Persistence.Extensions;
 using InnoclinicAutho.Persistence.Repositories;
 using InnoclinicAutho.WebApi.Middleware;
@@ -25,13 +24,12 @@ builder.Services.AddProblemDetails();
 
 builder.Services
     .AddDbContext(builder.Configuration.GetConnectionString("DefaultConnection"))
-    .AddJwtAuth(builder.Configuration);
+    .AddJwtAuth(builder.Configuration)
+    .AddDistributedCache(builder.Configuration.GetConnectionString("Redis"));
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IUserRoleRepository, UserRoleRepository>();
-
-builder.Services.AddScoped<ICacheService, CacheService>();
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining(typeof(RegisterPatientCommandHandler)));
 builder.Services.AddValidatorsFromAssemblyContaining(typeof(RegisterUserCommandValidator));

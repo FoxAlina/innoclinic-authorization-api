@@ -10,24 +10,12 @@ namespace InnoclinicAutho.Application.UseCases.Users.Commands.LogoutUser;
 public class LogoutUserCommandHandler : IRequestHandler<LogoutUserCommand, BaseResponse<string>>
 {
     private readonly IUserRepository _userRepository;
-    private readonly IRoleRepository _roleRepository;
-    private readonly IUserRoleRepository _userRoleRepository;
-    private readonly IHashService _passwordHasher;
-    private readonly IJwtService _jwtService;
     private readonly ICacheService _cacheService;
     public LogoutUserCommandHandler(
         IUserRepository userRepository,
-        IRoleRepository roleRepository,
-        IUserRoleRepository userRoleRepository,
-        IHashService passwordHasher,
-        IJwtService jwtService,
         ICacheService cacheService)
     {
         _userRepository = userRepository;
-        _roleRepository = roleRepository;
-        _userRoleRepository = userRoleRepository;
-        _passwordHasher = passwordHasher;
-        _jwtService = jwtService;
         _cacheService = cacheService;
     }
 
