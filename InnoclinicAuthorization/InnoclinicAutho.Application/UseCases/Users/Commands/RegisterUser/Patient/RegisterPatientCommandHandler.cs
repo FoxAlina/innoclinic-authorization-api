@@ -10,15 +10,13 @@ public class RegisterPatientCommandHandler : RegisterUserCommandHandler<Register
         IRoleRepository roleRepository, 
         IUserRoleRepository userRoleRepository, 
         IHashService passwordHasher, 
-        IJwtService jwtService,
-        ICacheService cacheService)
+        IJwtService jwtService)
         : base(
             userRepository, 
             roleRepository, 
             userRoleRepository, 
             passwordHasher, 
-            jwtService, 
-            cacheService)
+            jwtService)
     {
         _userRole = Domain.Common.UserRoles.Patient;
     }

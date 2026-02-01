@@ -5,6 +5,7 @@ using InnoclinicAutho.Application.UseCases.Users.Commands.LogoutUser;
 using InnoclinicAutho.Application.UseCases.Users.Commands.RegisterUser;
 using InnoclinicAutho.Application.UseCases.Users.Commands.RegisterUser.Admin;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 [Route("api/[controller]")]
@@ -88,5 +89,12 @@ public class AuthController : ControllerBase
         }
 
         return BadRequest(response);
+    }
+
+    [Authorize]
+    [HttpGet("Demo")]
+    public IActionResult Demo()
+    {
+        return Ok("User Authenticated Successfully!");
     }
 }

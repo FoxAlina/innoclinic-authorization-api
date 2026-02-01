@@ -48,27 +48,7 @@ public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, BaseRes
 
             var userRoleNames = await _userRoleRepository.GetAllRoleNamesByUserIdAsync(user.Id, cancellationToken);
 
-            string token;
-            var cacheKey = $"user:{user.Id}";
-            CachedUser cachedValue = await _cacheService.GetAsync<CachedUser>(cacheKey, cancellationToken);
-
-            if (cachedValue == null)
-            {
-                token = _jwtService.GenerateToken(user.Id, user.Email, userRoleNames.ToList());
-
-                await _cacheService.SetAsync(
-                    cacheKey,
-                    new CachedUser(
-                        user.Id,
-                        user.Email,
-                        user.FirstName,
-                        user.LastName,
-                        await _userRoleRepository.GetAllRoleNamesByUserIdAsync(user.Id, cancellationToken),
-                        token),
-                    TimeSpan.FromHours(1),
-                    cancellationToken);
-            }
-            else token = cachedValue.Token;
+            string token = _jwtService.GenerateToken(user.Id, user.Email, userRoleNames.ToList());
 
             response.Data = new UserDto(
                 user.Id,

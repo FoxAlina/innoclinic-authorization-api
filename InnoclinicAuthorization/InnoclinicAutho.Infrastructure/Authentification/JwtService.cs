@@ -1,7 +1,6 @@
 ﻿namespace InnoclinicAutho.Infrastructure.Implementations;
 
 using InnoclinicAutho.Application.Interfaces;
-using InnoclinicAutho.Domain.Common;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
@@ -40,6 +39,15 @@ public class JwtService(IConfiguration configuration) : IJwtService
 
         var tokenHandler = new JsonWebTokenHandler();
         string token = tokenHandler.CreateToken(tokenDescriptor);
+
         return token;
+    }
+
+    public DateTime ReadTokenExpiryTime(string token)
+    {
+        var tokenHandler = new JsonWebTokenHandler();
+        var readtoken = tokenHandler.ReadToken(token);
+
+        return readtoken.ValidTo;
     }
 }

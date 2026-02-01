@@ -21,7 +21,7 @@ public class CacheService : ICacheService
     public async Task<T?> GetAsync<T>(string key, CancellationToken cancellationToken = default) where T : class
     {
         var cached = await _cache.GetAsync(key, cancellationToken);
-
+        
         if (cached == null || cached.Length == 0)
             return null;
 
@@ -51,5 +51,15 @@ public class CacheService : ICacheService
 
         var serialized = JsonSerializer.Serialize(value, _serializerOptions);
         await _cache.SetStringAsync(key, serialized, options, cancellationToken);
+    }
+
+    public async Task<bool> KeyExistsAsync(string key, CancellationToken cancellationToken = default)
+    {
+        var cached = await _cache.GetAsync(key, cancellationToken);
+
+        if (cached == null || cached.Length == 0)
+            return false;
+
+        return true;
     }
 }

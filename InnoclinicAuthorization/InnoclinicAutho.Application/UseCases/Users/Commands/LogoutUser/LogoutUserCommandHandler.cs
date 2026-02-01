@@ -10,13 +10,16 @@ namespace InnoclinicAutho.Application.UseCases.Users.Commands.LogoutUser;
 public class LogoutUserCommandHandler : IRequestHandler<LogoutUserCommand, BaseResponse<string>>
 {
     private readonly IUserRepository _userRepository;
-    private readonly ICacheService _cacheService;
+    private readonly IUserRoleRepository _userRoleRepository;
+    private readonly IJwtBlackListService _jwtBlackListService;
     public LogoutUserCommandHandler(
         IUserRepository userRepository,
-        ICacheService cacheService)
+        IUserRoleRepository userRoleRepository,
+        IJwtBlackListService jwtBlackListService)
     {
         _userRepository = userRepository;
-        _cacheService = cacheService;
+        _userRoleRepository = userRoleRepository;
+        _jwtBlackListService = jwtBlackListService;
     }
 
     public async Task<BaseResponse<string>> Handle(LogoutUserCommand request, CancellationToken cancellationToken)
@@ -31,14 +34,18 @@ public class LogoutUserCommandHandler : IRequestHandler<LogoutUserCommand, BaseR
             {
                 throw new DomainException("User was not found.");
             }
+            var cachedUser = new CachedUser(
+                    user.Id,
+                    user.Email,
+                    user.FirstName,
+                    user.LastName,
+                    await _userRoleRepository.GetAllRoleNamesByUserIdAsync(user.Id, cancellationToken),
+                    request.JwtToken);
 
-            var cacheKey = $"user:{user.Id}";
-            CachedUser cachedValue = await _cacheService.GetAsync<CachedUser>(cacheKey, cancellationToken);
-
-            if (cachedValue != null)
-            {
-                await _cacheService.RemoveAsync(cacheKey, cancellationToken);
-            }
+            await _jwtBlackListService.AddToBlacklistAsync(
+                cachedUser,
+                request.JwtToken,
+                cancellationToken);
 
             response.Data = "Success";
 

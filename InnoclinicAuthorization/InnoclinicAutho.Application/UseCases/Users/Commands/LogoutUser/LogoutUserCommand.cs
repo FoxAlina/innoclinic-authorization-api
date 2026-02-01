@@ -5,5 +5,6 @@ namespace InnoclinicAutho.Application.UseCases.Users.Commands.LogoutUser;
 
 public record LogoutUserCommand
 (
-    string Email
+    string Email,
+    string JwtToken
 ) : IRequest<BaseResponse<string>>;

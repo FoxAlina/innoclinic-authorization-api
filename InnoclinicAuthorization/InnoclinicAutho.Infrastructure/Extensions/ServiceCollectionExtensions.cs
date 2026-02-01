@@ -4,11 +4,13 @@ using InnoclinicAutho.Application.Interfaces;
 using InnoclinicAutho.Infrastructure.Authentification;
 using InnoclinicAutho.Infrastructure.Caching;
 using InnoclinicAutho.Infrastructure.Implementations;
+using InnoclinicAutho.Infrastructure.JWT_Blacklisting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using System.Text.Json;
 
@@ -33,7 +35,36 @@ public static class ServiceCollectionExtensions
                     ValidateLifetime = true,
                     ClockSkew = TimeSpan.Zero
                 };
+
+                options.Events = new JwtBearerEvents
+                {
+                    OnTokenValidated = async context =>
+                    {
+                        var rawToken = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+                        if (String.IsNullOrEmpty(rawToken)) return;
+
+                        var blacklistService = context.HttpContext.RequestServices.GetRequiredService<IJwtBlackListService>();
+                        if (await blacklistService.IsBlacklistedAsync(rawToken))
+                        {
+                            context.Fail("This token has been blacklisted.");
+                        }
+                    }
+                };
+
+                options.RequireHttpsMetadata = true;
+                options.SaveToken = true;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(configuration["JwtSettings:Secret"])),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
             });
+
+        serviceCollection.AddAuthorization();
+
+        serviceCollection.AddScoped<IJwtBlackListService, JwtBlacklistService>();
 
         return serviceCollection;
     }
