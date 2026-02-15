@@ -1,6 +1,8 @@
 using FluentValidation;
+using InnoclinicAutho.Application.Interfaces;
 using InnoclinicAutho.Application.Interfaces.Repositories;
 using InnoclinicAutho.Application.UseCases.Behavior;
+using InnoclinicAutho.Application.UseCases.Common;
 using InnoclinicAutho.Application.UseCases.Users.Commands.RegisterUser;
 using InnoclinicAutho.Application.UseCases.Users.Commands.RegisterUser.Patient;
 using InnoclinicAutho.Infrastructure.Extensions;
@@ -32,9 +34,12 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IUserRoleRepository, UserRoleRepository>();
 
+builder.Services.AddScoped<IUser, CurrentUser>();
+
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining(typeof(RegisterPatientCommandHandler)));
 builder.Services.AddValidatorsFromAssemblyContaining(typeof(RegisterUserCommandValidator));
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(AuthorizationBehaviour<,>));
 
 builder.Services.AddSwaggerGen(c => {
     c.SwaggerDoc("v1", new OpenApiInfo

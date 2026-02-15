@@ -50,4 +50,26 @@ public class JwtService(IConfiguration configuration) : IJwtService
 
         return readtoken.ValidTo;
     }
+
+    public Guid ReadTokenUserId(string token)
+    {
+        Guid res = Guid.Empty;
+        var tokenHandler = new JsonWebTokenHandler();
+        var readtoken = tokenHandler.ReadJsonWebToken(token);
+        var claim = readtoken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Sid);
+
+        if (claim != null && !Guid.TryParse(claim.Value, out res))
+            res = Guid.Empty;
+
+        return res;
+    }
+    
+    public IEnumerable<Claim> ReadTokenClaims(string token)
+    {
+        Guid res = Guid.Empty;
+        var tokenHandler = new JsonWebTokenHandler();
+        var readtoken = tokenHandler.ReadJsonWebToken(token);
+        
+        return readtoken.Claims;
+    }
 }

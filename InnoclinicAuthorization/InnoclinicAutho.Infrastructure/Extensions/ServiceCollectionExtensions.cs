@@ -1,6 +1,8 @@
 ﻿namespace InnoclinicAutho.Infrastructure.Extensions;
 
 using InnoclinicAutho.Application.Interfaces;
+using InnoclinicAutho.Application.Interfaces.Repositories;
+using InnoclinicAutho.Application.UseCases.Common;
 using InnoclinicAutho.Infrastructure.Authentification;
 using InnoclinicAutho.Infrastructure.Caching;
 using InnoclinicAutho.Infrastructure.Implementations;
@@ -11,8 +13,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
+using System.Linq;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Localization;
+using InnoclinicAutho.Domain.Exceptions;
 
 public static class ServiceCollectionExtensions
 {
@@ -47,6 +54,27 @@ public static class ServiceCollectionExtensions
                         if (await blacklistService.IsBlacklistedAsync(rawToken))
                         {
                             context.Fail("This token has been blacklisted.");
+                        }
+                        else
+                        {
+                            var userRepo = context.HttpContext.RequestServices.GetRequiredService<IUserRepository>();
+                            var userRolesRepo = context.HttpContext.RequestServices.GetRequiredService<IUserRoleRepository>();
+                            var jwtService = context.HttpContext.RequestServices.GetRequiredService<IJwtService>();
+
+                            var user = await userRepo.GetByIdAsync(jwtService.ReadTokenUserId(rawToken));
+
+                            if (user != null)
+                            {
+                                var currentUser = context.HttpContext.RequestServices.GetRequiredService<IUser>();
+                                currentUser.Id = user.Id;
+                                currentUser.Roles = (await userRolesRepo.GetAllRoleNamesByUserIdAsync(user.Id)).ToList();
+                            }
+                            else
+                            {
+                                // ToDo: If access without Authorization header?
+                                context.Fail("User does not exist.");
+                                context.Response.Redirect("/login");
+                            }
                         }
                     }
                 };

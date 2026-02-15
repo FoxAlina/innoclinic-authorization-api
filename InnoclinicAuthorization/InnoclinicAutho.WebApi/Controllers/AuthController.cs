@@ -4,6 +4,10 @@ using InnoclinicAutho.Application.UseCases.Users.Commands.LoginUser;
 using InnoclinicAutho.Application.UseCases.Users.Commands.LogoutUser;
 using InnoclinicAutho.Application.UseCases.Users.Commands.RegisterUser;
 using InnoclinicAutho.Application.UseCases.Users.Commands.RegisterUser.Admin;
+using InnoclinicAutho.Application.UseCases.Users.Queries;
+using InnoclinicAutho.Application.UseCases.Users.Queries.GetUser;
+using InnoclinicAutho.Application.UseCases.Users.Queries.GetUserList;
+using InnoclinicAutho.Domain.Common;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,7 +22,7 @@ public class AuthController : ControllerBase
     {
         _mediator = mediator;
     }
-	
+
     [HttpPost("sign-up")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
@@ -82,7 +86,7 @@ public class AuthController : ControllerBase
         if (command is null) return BadRequest();
 
         var response = await _mediator.Send(command);
-
+		
         if (response.Succcess)
         {
             return Ok(response);
@@ -95,6 +99,42 @@ public class AuthController : ControllerBase
     [HttpGet("Demo")]
     public IActionResult Demo()
     {
-        return Ok("User Authenticated Successfully!");
+        return Ok("User Authenticated Successfully! Jwt Token is valid.");
+    }
+
+    [HttpGet("user-list")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetUserList([FromBody] GetUserListQuery query)
+    {
+        //if (query is null) return BadRequest();
+
+        var response = await _mediator.Send(query);
+
+        if (response.Succcess)
+        {
+            return Ok(response);
+        }
+
+        return BadRequest(response);
+    }
+
+    [HttpGet("user-profile")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetUserProfile([FromBody] GetUserQuery query)
+    {
+        if (query is null) return BadRequest();
+
+        var response = await _mediator.Send(query);
+
+        if (response.Succcess)
+        {
+            return Ok(response);
+        }
+
+        return BadRequest(response);
     }
 }
