@@ -106,7 +106,7 @@ public class AuthController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetUserList([FromBody] GetUserListQuery query)
+    public async Task<IActionResult> GetUserList([FromQuery] GetUserListQuery query)
     {
         //if (query is null) return BadRequest();
 
@@ -124,7 +124,7 @@ public class AuthController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetUserProfile([FromBody] GetUserQuery query)
+    public async Task<IActionResult> GetUserProfile([FromQuery] GetUserQuery query)
     {
         if (query is null) return BadRequest();
 

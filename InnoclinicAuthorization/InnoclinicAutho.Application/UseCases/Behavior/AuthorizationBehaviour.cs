@@ -1,5 +1,5 @@
 ﻿using InnoclinicAutho.Application.Interfaces;
-using InnoclinicAutho.Application.UseCases.Users.Queries;
+using InnoclinicAutho.Application.UseCases.Users.AuthAttributes;
 using InnoclinicAutho.Domain.Exceptions;
 using MediatR;
 using System.Reflection;

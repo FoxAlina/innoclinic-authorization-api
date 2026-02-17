@@ -56,7 +56,7 @@ public class JwtService(IConfiguration configuration) : IJwtService
         Guid res = Guid.Empty;
         var tokenHandler = new JsonWebTokenHandler();
         var readtoken = tokenHandler.ReadJsonWebToken(token);
-        var claim = readtoken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Sid);
+        var claim = readtoken.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub);
 
         if (claim != null && !Guid.TryParse(claim.Value, out res))
             res = Guid.Empty;

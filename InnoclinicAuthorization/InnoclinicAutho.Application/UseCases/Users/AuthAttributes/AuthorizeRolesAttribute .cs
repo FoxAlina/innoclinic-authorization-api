@@ -1,6 +1,6 @@
 ﻿using InnoclinicAutho.Domain.Common;
 
-namespace InnoclinicAutho.Application.UseCases.Users.Queries;
+namespace InnoclinicAutho.Application.UseCases.Users.AuthAttributes;
 
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = true)]
 public class AuthorizeRolesAttribute : Attribute

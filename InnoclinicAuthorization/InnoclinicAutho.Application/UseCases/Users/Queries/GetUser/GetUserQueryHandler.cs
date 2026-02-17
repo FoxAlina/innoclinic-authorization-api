@@ -21,7 +21,7 @@ public class GetUserQueryHandler : IRequestHandler<GetUserQuery, BaseResponse<Us
 
         try
         {
-            var user = await _userRepository.GetByEmailAsync(request.Email, cancellationToken);
+            var user = await _userRepository.GetByIdAsync(request.Id, cancellationToken);
 
             if (user == null)
             {

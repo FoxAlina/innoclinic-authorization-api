@@ -50,6 +50,7 @@ public static class ServiceCollectionExtensions
                         var rawToken = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
                         if (String.IsNullOrEmpty(rawToken)) return;
 
+                        // Todo: Authorize swagger logout ???
                         var blacklistService = context.HttpContext.RequestServices.GetRequiredService<IJwtBlackListService>();
                         if (await blacklistService.IsBlacklistedAsync(rawToken))
                         {
@@ -61,7 +62,8 @@ public static class ServiceCollectionExtensions
                             var userRolesRepo = context.HttpContext.RequestServices.GetRequiredService<IUserRoleRepository>();
                             var jwtService = context.HttpContext.RequestServices.GetRequiredService<IJwtService>();
 
-                            var user = await userRepo.GetByIdAsync(jwtService.ReadTokenUserId(rawToken));
+                            var userId = jwtService.ReadTokenUserId(rawToken);
+                            var user = await userRepo.GetByIdAsync(userId);
 
                             if (user != null)
                             {

@@ -1,4 +1,5 @@
 ﻿using InnoclinicAutho.Application.UseCases.Common;
+using InnoclinicAutho.Application.UseCases.Users.AuthAttributes;
 using InnoclinicAutho.Application.UseCases.Users.DTOs;
 using MediatR;
 
