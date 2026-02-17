@@ -5,7 +5,7 @@ using MediatR;
 
 namespace InnoclinicAutho.Application.UseCases.Users.Queries.GetUser;
 
-[AuthorizeRoles(Domain.Common.UserRoles.Patient)]
+[AuthorizeRoles(Domain.Common.UserRoles.Patient, Domain.Common.UserRoles.Admin)]
 public record GetUserQuery
 (
     Guid Id
