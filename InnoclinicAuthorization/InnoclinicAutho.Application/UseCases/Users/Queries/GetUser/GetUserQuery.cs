@@ -5,7 +5,6 @@ using MediatR;
 
 namespace InnoclinicAutho.Application.UseCases.Users.Queries.GetUser;
 
-//Todo: Patient - only its profile, Admin - any users profile
 [AuthorizeRoles(Domain.Common.UserRoles.Patient)]
 public record GetUserQuery
 (

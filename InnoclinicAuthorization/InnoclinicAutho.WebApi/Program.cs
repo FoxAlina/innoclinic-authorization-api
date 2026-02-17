@@ -5,6 +5,7 @@ using InnoclinicAutho.Application.UseCases.Behavior;
 using InnoclinicAutho.Application.UseCases.Common;
 using InnoclinicAutho.Application.UseCases.Users.Commands.RegisterUser;
 using InnoclinicAutho.Application.UseCases.Users.Commands.RegisterUser.Patient;
+using InnoclinicAutho.Application.UseCases.Users.Queries.GetUser;
 using InnoclinicAutho.Infrastructure.Extensions;
 using InnoclinicAutho.Persistence.Extensions;
 using InnoclinicAutho.Persistence.Repositories;
@@ -38,6 +39,7 @@ builder.Services.AddScoped<IUser, CurrentUser>();
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining(typeof(RegisterPatientCommandHandler)));
 builder.Services.AddValidatorsFromAssemblyContaining(typeof(RegisterUserCommandValidator));
+builder.Services.AddValidatorsFromAssemblyContaining(typeof(GetUserQueryValidator));
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(AuthorizationBehaviour<,>));
 

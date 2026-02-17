@@ -9,7 +9,7 @@ namespace InnoclinicAutho.Application.UseCases.Behavior;
 public class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : notnull
 {
     private readonly IUser _user;
-    
+
     public AuthorizationBehaviour(IUser user)
     {
         _user = user;
@@ -53,7 +53,8 @@ public class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRe
             }
         }
 
-        // User is authorized / authorization not required
         return await next();
     }
+
+
 }
