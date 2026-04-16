@@ -48,9 +48,9 @@ public static class ServiceCollectionExtensions
                     OnTokenValidated = async context =>
                     {
                         var rawToken = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+
                         if (String.IsNullOrEmpty(rawToken)) return;
 
-                        // Todo: Authorize swagger logout ???
                         var blacklistService = context.HttpContext.RequestServices.GetRequiredService<IJwtBlackListService>();
                         if (await blacklistService.IsBlacklistedAsync(rawToken))
                         {
@@ -73,7 +73,6 @@ public static class ServiceCollectionExtensions
                             }
                             else
                             {
-                                // ToDo: If access without Authorization header?
                                 context.Fail("User does not exist.");
                                 context.Response.Redirect("/login");
                             }

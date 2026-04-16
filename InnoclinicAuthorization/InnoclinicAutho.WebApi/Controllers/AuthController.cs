@@ -4,6 +4,7 @@ using InnoclinicAutho.Application.UseCases.Users.Commands.LoginUser;
 using InnoclinicAutho.Application.UseCases.Users.Commands.LogoutUser;
 using InnoclinicAutho.Application.UseCases.Users.Commands.RegisterUser;
 using InnoclinicAutho.Application.UseCases.Users.Commands.RegisterUser.Admin;
+using InnoclinicAutho.Application.UseCases.Users.Commands.RegisterUser.CreateUserByAdmin;
 using InnoclinicAutho.Application.UseCases.Users.Queries;
 using InnoclinicAutho.Application.UseCases.Users.Queries.GetUser;
 using InnoclinicAutho.Application.UseCases.Users.Queries.GetUserList;
@@ -28,6 +29,24 @@ public class AuthController : ControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> SignUp([FromBody] RegisterUserCommand command)
+    {
+        if (command is null) return BadRequest();
+
+        var response = await _mediator.Send(command);
+
+        if (response.Succcess)
+        {
+            return Ok(response);
+        }
+
+        return BadRequest(response);
+    }
+
+    [HttpPost("create-user-by-admin")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> CreateUserByAdmin([FromBody] CreateUserByAdminCommand command)
     {
         if (command is null) return BadRequest();
 

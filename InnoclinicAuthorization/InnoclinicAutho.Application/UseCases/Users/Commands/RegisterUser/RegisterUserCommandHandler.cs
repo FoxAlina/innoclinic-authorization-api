@@ -33,7 +33,7 @@ public class RegisterUserCommandHandler<T> : IRequestHandler<T, BaseResponse<Use
         _jwtService = jwtService;
     }
 
-    public async Task<BaseResponse<UserDto>> Handle(T request, CancellationToken cancellationToken)
+    public virtual async Task<BaseResponse<UserDto>> Handle(T request, CancellationToken cancellationToken)
     {
         var response = new BaseResponse<UserDto>();
 
