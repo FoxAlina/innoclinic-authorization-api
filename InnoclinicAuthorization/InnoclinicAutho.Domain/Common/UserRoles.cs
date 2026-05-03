@@ -4,5 +4,6 @@ public enum UserRoles
 {
     Patient = 0,
     Doctor = 1,
-    Admin = 2
+    Admin = 2,
+    Receptionist = 3
 }
