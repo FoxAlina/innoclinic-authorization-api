@@ -46,7 +46,7 @@ public class UserRoleRepository : BaseRepository<UserRole>, IUserRoleRepository
             ur => ur.RoleId,
             r => r.Id,
             (ur, r) => new { ur, r})
-            .Where(joined => joined.r.RoleName == name)
+            .Where(joined => joined.r.RoleName == name && joined.ur.UserId == userId)
             .Select(joined => joined.ur)
             .FirstOrDefaultAsync(cancellationToken);
     }
