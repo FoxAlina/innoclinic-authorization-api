@@ -2,10 +2,8 @@
 
 using InnoclinicAutho.Application.Interfaces;
 using InnoclinicAutho.Application.Interfaces.Repositories;
-using InnoclinicAutho.Application.UseCases.Cache;
 using InnoclinicAutho.Application.UseCases.Common;
 using InnoclinicAutho.Application.UseCases.Users.DTOs;
-using InnoclinicAutho.Domain.Entities;
 using InnoclinicAutho.Domain.Exceptions;
 using MediatR;
 
@@ -55,6 +53,7 @@ public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, BaseRes
                 user.Email,
                 user.FirstName,
                 user.LastName,
+                userRoleNames.ToList(),
                 token);
 
             if (response.Data is not null)

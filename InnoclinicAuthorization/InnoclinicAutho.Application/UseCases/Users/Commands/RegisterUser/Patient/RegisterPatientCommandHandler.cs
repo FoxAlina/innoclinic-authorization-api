@@ -8,11 +8,13 @@ public class RegisterPatientCommandHandler : RegisterUserCommandHandler<Register
     public RegisterPatientCommandHandler(
         IUserRepository userRepository, 
         IRoleRepository roleRepository,
+        IUserRoleRepository userRoleRepository,
         IHashService passwordHasher, 
         IJwtService jwtService)
         : base(
             userRepository, 
             roleRepository,
+            userRoleRepository,
             passwordHasher, 
             jwtService)
     {

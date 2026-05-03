@@ -8,11 +8,13 @@ public class RegisterAdminCommandHandler : RegisterUserCommandHandler<RegisterAd
     public RegisterAdminCommandHandler(
         IUserRepository userRepository,
         IRoleRepository roleRepository,
+        IUserRoleRepository userRoleRepository,
         IHashService passwordHasher,
         IJwtService jwtService)
         : base(
             userRepository, 
-            roleRepository, 
+            roleRepository,
+            userRoleRepository,
             passwordHasher, 
             jwtService)
     {

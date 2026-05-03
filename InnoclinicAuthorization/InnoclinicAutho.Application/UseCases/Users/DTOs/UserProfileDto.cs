@@ -1,6 +1,4 @@
-﻿using InnoclinicAutho.Domain.Common;
-
-namespace InnoclinicAutho.Application.UseCases.Users.DTOs;
+﻿namespace InnoclinicAutho.Application.UseCases.Users.DTOs;
 
 public record UserProfileDto
 (
@@ -8,5 +6,5 @@ public record UserProfileDto
     string Email,
     string FirstName,
     string LastName,
-    List<string>? UserRoles
+    List<string> UserRoles
 );

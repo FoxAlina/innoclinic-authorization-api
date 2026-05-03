@@ -10,11 +10,13 @@ public class CreateUserByAdminCommandHandler : RegisterUserCommandHandler<Create
     public CreateUserByAdminCommandHandler(
         IUserRepository userRepository,
         IRoleRepository roleRepository,
+        IUserRoleRepository userRoleRepository,
         IHashService passwordHasher,
         IJwtService jwtService)
         : base(
             userRepository,
             roleRepository,
+            userRoleRepository,
             passwordHasher,
             jwtService)
     { }
