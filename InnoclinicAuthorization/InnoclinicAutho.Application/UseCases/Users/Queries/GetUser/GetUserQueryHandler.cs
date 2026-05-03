@@ -1,6 +1,7 @@
 ﻿using InnoclinicAutho.Application.Interfaces.Repositories;
 using InnoclinicAutho.Application.UseCases.Common;
 using InnoclinicAutho.Application.UseCases.Users.DTOs;
+using InnoclinicAutho.Domain.Common;
 using InnoclinicAutho.Domain.Exceptions;
 using MediatR;
 
@@ -9,10 +10,14 @@ namespace InnoclinicAutho.Application.UseCases.Users.Queries.GetUser;
 public class GetUserQueryHandler : IRequestHandler<GetUserQuery, BaseResponse<UserProfileDto>>
 {
     private readonly IUserRepository _userRepository;
+    private readonly IUserRoleRepository _userRoleRepository;
 
-    public GetUserQueryHandler(IUserRepository userRepository)
+    public GetUserQueryHandler(
+        IUserRepository userRepository,
+        IUserRoleRepository userRoleRepository)
     {
         _userRepository = userRepository;
+        _userRoleRepository = userRoleRepository;
     }
 
     public async Task<BaseResponse<UserProfileDto>> Handle(GetUserQuery request, CancellationToken cancellationToken)
@@ -28,10 +33,14 @@ public class GetUserQueryHandler : IRequestHandler<GetUserQuery, BaseResponse<Us
                 throw new DomainException("User was not found.");
             }
 
+            var userRoles = await _userRoleRepository.GetAllRoleNamesByUserIdAsync(request.Id, cancellationToken);
+
             response.Data = new UserProfileDto(
+                user.Id,
                 user.Email,
                 user.FirstName,
-                user.LastName);
+                user.LastName,
+                userRoles.ToList());
 
             if (response.Data is not null)
             {
