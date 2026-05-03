@@ -7,14 +7,12 @@ public class RegisterPatientCommandHandler : RegisterUserCommandHandler<Register
 {
     public RegisterPatientCommandHandler(
         IUserRepository userRepository, 
-        IRoleRepository roleRepository, 
-        IUserRoleRepository userRoleRepository, 
+        IRoleRepository roleRepository,
         IHashService passwordHasher, 
         IJwtService jwtService)
         : base(
             userRepository, 
-            roleRepository, 
-            userRoleRepository, 
+            roleRepository,
             passwordHasher, 
             jwtService)
     {
