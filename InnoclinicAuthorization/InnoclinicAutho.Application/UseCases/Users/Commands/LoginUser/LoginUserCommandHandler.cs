@@ -10,16 +10,25 @@ using MediatR;
 public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, BaseResponse<UserDto>>
 {
     private readonly IUserRepository _userRepository;
+    private readonly IRoleRepository _roleRepository;
+    private readonly IUserRoleRepository _userRoleRepository;
     private readonly IHashService _passwordHasher;
     private readonly IJwtService _jwtService;
+    private readonly ICacheService _cacheService;
     public LoginUserCommandHandler(
         IUserRepository userRepository,
+        IRoleRepository roleRepository,
+        IUserRoleRepository userRoleRepository,
         IHashService passwordHasher,
-        IJwtService jwtService)
+        IJwtService jwtService,
+        ICacheService cacheService)
     {
         _userRepository = userRepository;
+        _roleRepository = roleRepository;
+        _userRoleRepository = userRoleRepository;
         _passwordHasher = passwordHasher;
         _jwtService = jwtService;
+        _cacheService = cacheService;
     }
 
     public async Task<BaseResponse<UserDto>> Handle(LoginUserCommand request, CancellationToken cancellationToken)
@@ -35,13 +44,16 @@ public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, BaseRes
                 throw new DomainException("Invalid email or password.");
             }
 
-            var token = _jwtService.GenerateToken(user.Id, user.Email, user.Role);
+            var userRoleNames = await _userRoleRepository.GetAllRoleNamesByUserIdAsync(user.Id, cancellationToken);
+
+            string token = _jwtService.GenerateToken(user.Id, user.Email, userRoleNames.ToList());
 
             response.Data = new UserDto(
                 user.Id,
                 user.Email,
                 user.FirstName,
                 user.LastName,
+                userRoleNames.ToList(),
                 token);
 
             if (response.Data is not null)

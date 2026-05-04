@@ -11,7 +11,7 @@ public class BaseEntity
     public DateTimeOffset CreateDateTime { get; set; } = DateTimeOffset.UtcNow;
     public DateTimeOffset? UpdateDateTime { get; set; }
     public DateTimeOffset? DeleteDateTime { get; set; }
-    public Guid UserId { get; set; }
+    public Guid CreatorUserId { get; set; }
     public bool IsDeleted { get; set; } = false;
 }
 

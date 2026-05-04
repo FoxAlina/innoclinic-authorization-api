@@ -1,7 +1,6 @@
 ﻿namespace InnoclinicAutho.Infrastructure.Implementations;
 
 using InnoclinicAutho.Application.Interfaces;
-using InnoclinicAutho.Domain.Common;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
@@ -10,16 +9,20 @@ using System.Text;
 
 public class JwtService(IConfiguration configuration) : IJwtService
 {
-    public string GenerateToken(Guid userId, string email, UserRoles _userRole)
+    public string GenerateToken(Guid userId, string email, List<string> userRoles)
     {
         var claims = new List<Claim>
             {
                 new (JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new (JwtRegisteredClaimNames.Sub, userId.ToString()),
                 new (JwtRegisteredClaimNames.Email, email),
-                new (JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64),
-                new (ClaimTypes.Role, _userRole.ToString())
+                new (JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64)
             };
+
+        foreach (var role in userRoles)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, role.ToString()));
+        }
 
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSettings:Secret"]!));
 
@@ -36,6 +39,37 @@ public class JwtService(IConfiguration configuration) : IJwtService
 
         var tokenHandler = new JsonWebTokenHandler();
         string token = tokenHandler.CreateToken(tokenDescriptor);
+
         return token;
+    }
+
+    public DateTime ReadTokenExpiryTime(string token)
+    {
+        var tokenHandler = new JsonWebTokenHandler();
+        var readtoken = tokenHandler.ReadToken(token);
+
+        return readtoken.ValidTo;
+    }
+
+    public Guid ReadTokenUserId(string token)
+    {
+        Guid res = Guid.Empty;
+        var tokenHandler = new JsonWebTokenHandler();
+        var readtoken = tokenHandler.ReadJsonWebToken(token);
+        var claim = readtoken.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub);
+
+        if (claim != null && !Guid.TryParse(claim.Value, out res))
+            res = Guid.Empty;
+
+        return res;
+    }
+    
+    public IEnumerable<Claim> ReadTokenClaims(string token)
+    {
+        Guid res = Guid.Empty;
+        var tokenHandler = new JsonWebTokenHandler();
+        var readtoken = tokenHandler.ReadJsonWebToken(token);
+        
+        return readtoken.Claims;
     }
 }

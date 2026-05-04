@@ -1,9 +1,12 @@
-﻿namespace InnoclinicAutho.Application.Interfaces;
+﻿using System.Security.Claims;
 
-using InnoclinicAutho.Domain.Common;
+namespace InnoclinicAutho.Application.Interfaces;
 
 public interface IJwtService
 {
-    public string GenerateToken(Guid userId, string email, UserRoles _userRole);
+    public string GenerateToken(Guid userId, string email, List<string> userRoles);
+    public DateTime ReadTokenExpiryTime(string token);
+    public Guid ReadTokenUserId(string token);
+    public IEnumerable<Claim> ReadTokenClaims(string token);
 }
 

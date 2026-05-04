@@ -1,0 +1,12 @@
+﻿using InnoclinicAutho.Application.UseCases.Common;
+using InnoclinicAutho.Application.UseCases.Users.AuthAttributes;
+using InnoclinicAutho.Application.UseCases.Users.DTOs;
+using MediatR;
+
+namespace InnoclinicAutho.Application.UseCases.Users.Queries.GetUser;
+
+[AuthorizeRoles(Domain.Common.UserRoles.Patient, Domain.Common.UserRoles.Admin)]
+public record GetUserQuery
+(
+    Guid Id
+) : IRequest<BaseResponse<UserProfileDto>>;

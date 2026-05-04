@@ -1,11 +1,10 @@
 ﻿namespace InnoclinicAutho.Application.UseCases.Users.DTOs;
 
-public record UserDto
+public record UserProfileDto
 (
-    Guid UserId,
+    Guid Id,
     string Email,
     string FirstName,
     string LastName,
-    List<string> UserRoles,
-    string Token
+    List<string> UserRoles
 );

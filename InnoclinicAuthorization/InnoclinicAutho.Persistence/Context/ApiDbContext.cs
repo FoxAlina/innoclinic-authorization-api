@@ -15,6 +15,8 @@ public class ApiDbContext : DbContext, IApiDbContext
     }
 
     public DbSet<User> Users { get; set; }
+    public DbSet<Role> Roles { get; set; }
+    public DbSet<UserRole> UserRoles { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -37,10 +39,6 @@ public class ApiDbContext : DbContext, IApiDbContext
             entity.Property(e => e.PasswordHash)
                 .IsRequired();
 
-            entity.Property(e => e.Role)
-                .IsRequired()
-                .HasDefaultValue(UserRoles.Patient);
-
             entity.Property(e => e.IsDeleted)
                 .HasDefaultValue(false);
 
@@ -50,6 +48,43 @@ public class ApiDbContext : DbContext, IApiDbContext
             entity.HasIndex(e => e.Email)
                 .IsUnique()
                 .HasDatabaseName("IX_Users_Email");
+        });
+
+        modelBuilder.Entity<Role>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.RoleName)
+                .IsRequired()
+                .HasMaxLength(20);
+
+            entity.Property(e => e.IsDeleted)
+                .HasDefaultValue(false);
+
+            entity.Property(e => e.CreateDateTime)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+            entity.HasIndex(e => e.RoleName)
+                .IsUnique()
+                .HasDatabaseName("IX_Roles_Name");
+        });
+
+        modelBuilder.Entity<UserRole>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.HasOne(t => t.User).WithMany(e => e.UserRoles).HasForeignKey(k => k.UserId);
+            entity.HasOne(t => t.Role).WithMany(e => e.UserRoles).HasForeignKey(k => k.RoleId);
+
+            entity.Property(e => e.IsDeleted)
+                .HasDefaultValue(false);
+
+            entity.Property(e => e.CreateDateTime)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+            entity.HasIndex(e => e.Id)
+                .IsUnique()
+                .HasDatabaseName("IX_UserRoles_Id");
         });
 
         base.OnModelCreating(modelBuilder);
