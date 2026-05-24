@@ -7,7 +7,7 @@ using MediatR;
 
 namespace InnoclinicAutho.Application.UseCases.Users.Queries.GetUser;
 
-public class GetUserQueryHandler : IRequestHandler<GetUserQuery, BaseResponse<UserProfileDto>>
+public class GetUserQueryHandler : IRequestHandler<GetUserQuery, BaseResponse<UserAccountDto>>
 {
     private readonly IUserRepository _userRepository;
     private readonly IUserRoleRepository _userRoleRepository;
@@ -20,9 +20,9 @@ public class GetUserQueryHandler : IRequestHandler<GetUserQuery, BaseResponse<Us
         _userRoleRepository = userRoleRepository;
     }
 
-    public async Task<BaseResponse<UserProfileDto>> Handle(GetUserQuery request, CancellationToken cancellationToken)
+    public async Task<BaseResponse<UserAccountDto>> Handle(GetUserQuery request, CancellationToken cancellationToken)
     {
-        var response = new BaseResponse<UserProfileDto>();
+        var response = new BaseResponse<UserAccountDto>();
 
         try
         {
@@ -35,7 +35,7 @@ public class GetUserQueryHandler : IRequestHandler<GetUserQuery, BaseResponse<Us
 
             var userRoles = await _userRoleRepository.GetAllRoleNamesByUserIdAsync(request.Id, cancellationToken);
 
-            response.Data = new UserProfileDto(
+            response.Data = new UserAccountDto(
                 user.Id,
                 user.Email,
                 user.FirstName,

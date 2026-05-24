@@ -6,7 +6,7 @@ using MediatR;
 
 namespace InnoclinicAutho.Application.UseCases.Users.Queries.GetUserList;
 
-public class GetUserListHandler : IRequestHandler<GetUserListQuery, BaseResponse<List<UserProfileDto>>>
+public class GetUserListHandler : IRequestHandler<GetUserListQuery, BaseResponse<List<UserAccountDto>>>
 {
     private readonly IUserRepository _userRepository;
     private readonly IUserRoleRepository _userRoleRepository;
@@ -18,9 +18,9 @@ public class GetUserListHandler : IRequestHandler<GetUserListQuery, BaseResponse
         _userRoleRepository = userRoleRepository;
     }
 
-    public async Task<BaseResponse<List<UserProfileDto>>> Handle(GetUserListQuery request, CancellationToken cancellationToken)
+    public async Task<BaseResponse<List<UserAccountDto>>> Handle(GetUserListQuery request, CancellationToken cancellationToken)
     {
-        var response = new BaseResponse<List<UserProfileDto>>();
+        var response = new BaseResponse<List<UserAccountDto>>();
 
         try
         {
@@ -31,12 +31,12 @@ public class GetUserListHandler : IRequestHandler<GetUserListQuery, BaseResponse
                 throw new DomainException("Users info was not found.");
             }
 
-            List<UserProfileDto> userProfileDtos = new List<UserProfileDto>();
+            List<UserAccountDto> userProfileDtos = new List<UserAccountDto>();
 
             foreach (var user in userList) {
                 var roles = await _userRoleRepository.GetAllRoleNamesByUserIdAsync(user.Id, cancellationToken);
 
-                userProfileDtos.Add(new UserProfileDto (
+                userProfileDtos.Add(new UserAccountDto (
                     user.Id,
                     user.Email,
                     user.FirstName,

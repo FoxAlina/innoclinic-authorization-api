@@ -1,25 +1,22 @@
 ﻿namespace InnoclinicAutho.Infrastructure.Extensions;
 
 using InnoclinicAutho.Application.Interfaces;
+using InnoclinicAutho.Application.Interfaces.MessageBroker;
 using InnoclinicAutho.Application.Interfaces.Repositories;
-using InnoclinicAutho.Application.UseCases.Common;
 using InnoclinicAutho.Infrastructure.Authentification;
 using InnoclinicAutho.Infrastructure.Caching;
 using InnoclinicAutho.Infrastructure.Implementations;
 using InnoclinicAutho.Infrastructure.JWT_Blacklisting;
+using InnoclinicAutho.Infrastructure.MessageBroker;
+using InnoclinicRabbitMQContracts.MessageBrokerContracts;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
+using System.Linq;
 using System.Text;
 using System.Text.Json;
-using System.Linq;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Localization;
-using InnoclinicAutho.Domain.Exceptions;
 
 public static class ServiceCollectionExtensions
 {
@@ -112,6 +109,36 @@ public static class ServiceCollectionExtensions
         });
 
         serviceCollection.AddScoped<ICacheService, CacheService>();
+
+        return serviceCollection;
+    }
+
+    public static IServiceCollection AddMassTransitServices(this IServiceCollection serviceCollection, IConfiguration configuration)
+    {
+        serviceCollection.AddMassTransit(cfg =>
+        {
+            cfg.SetKebabCaseEndpointNameFormatter();
+
+            cfg.UsingRabbitMq((context, bus) =>
+            {
+                bus.Host(configuration["RabbitMQSettings:Host"], "/", h =>
+                {
+                    h.Username(configuration["RabbitMQSettings:UserName"]);
+                    h.Password(configuration["RabbitMQSettings:Password"]);
+                });
+
+                bus.Message<CreatePatientProfile>(m =>
+                {
+                    m.SetEntityName(configuration["RabbitMQSettings:ExchangeName"]);
+                });
+
+                bus.ConfigureEndpoints(context);
+            });
+        });
+
+        serviceCollection.AddHealthChecks();
+
+        serviceCollection.AddScoped<IRabbitMQPublisher<CreatePatientProfile>, RabbitMQPublisher<CreatePatientProfile>>();
 
         return serviceCollection;
     }

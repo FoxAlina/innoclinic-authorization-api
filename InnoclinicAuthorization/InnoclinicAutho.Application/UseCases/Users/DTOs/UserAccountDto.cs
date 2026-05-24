@@ -1,6 +1,6 @@
 ﻿namespace InnoclinicAutho.Application.UseCases.Users.DTOs;
 
-public record UserProfileDto
+public record UserAccountDto
 (
     Guid Id,
     string Email,

@@ -29,7 +29,8 @@ builder.Services.AddProblemDetails();
 builder.Services
     .AddDbContext(builder.Configuration.GetConnectionString("DefaultConnection"))
     .AddJwtAuth(builder.Configuration)
-    .AddDistributedCache(builder.Configuration.GetConnectionString("Redis"));
+    .AddDistributedCache(builder.Configuration.GetConnectionString("Redis"))
+    .AddMassTransitServices(builder.Configuration);
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();

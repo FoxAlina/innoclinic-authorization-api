@@ -6,4 +6,4 @@ using MediatR;
 namespace InnoclinicAutho.Application.UseCases.Users.Queries.GetUserList;
 
 [AuthorizeRoles(Domain.Common.UserRoles.Admin)]
-public record GetUserListQuery : IRequest<BaseResponse<List<UserProfileDto>>>;
+public record GetUserListQuery : IRequest<BaseResponse<List<UserAccountDto>>>;

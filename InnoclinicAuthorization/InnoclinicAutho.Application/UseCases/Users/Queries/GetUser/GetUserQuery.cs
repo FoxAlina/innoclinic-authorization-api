@@ -9,4 +9,4 @@ namespace InnoclinicAutho.Application.UseCases.Users.Queries.GetUser;
 public record GetUserQuery
 (
     Guid Id
-) : IRequest<BaseResponse<UserProfileDto>>;
+) : IRequest<BaseResponse<UserAccountDto>>;
